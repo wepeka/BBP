@@ -1,0 +1,11 @@
+[
+  { "id": "winarto-kho", "name": "Winarto Kho, S.T., M.Eng.", "role": "Project Director", "order": 1 },
+  { "id": "suyana", "name": "Suyana", "role": "Engineering Coordinator", "order": 2 },
+  { "id": "andy-kurniawan", "name": "Andy Kurniawan", "role": "Project Coordinator", "order": 3 },
+  { "id": "moh-arifianto", "name": "Moh. Arifianto", "role": "Project Controller", "order": 4 },
+  { "id": "arzaaq-zalfan", "name": "Muh. Arzaaq Zalfan", "role": "HSE Coordinator", "order": 5 },
+  { "id": "antoni", "name": "Antoni", "role": "Logistic Coordinator", "order": 6 },
+  { "id": "yiyin-oktawati", "name": "Yiyin Oktawati, S.H", "role": "Procurement / Purchasing", "order": 7 },
+  { "id": "jemmy-ho", "name": "Jemmy Ho, S.Kom", "role": "Finance / HRD", "order": 8 },
+  { "id": "rina", "name": "Rina", "role": "Accounting", "order": 9 }
+]

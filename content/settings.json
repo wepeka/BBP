@@ -1,0 +1,56 @@
+{
+  "companyName": "PT. Bina Bangun Perkasa",
+  "shortName": "BBP",
+  "tagline": "General Contractor & Supplier",
+  "taglineLong": "Your Excellent Partner in Construction",
+  "heroHeadlineId": "Dibangun di 17 kota. Dipercaya lagi selama 13 tahun.",
+  "heroSubheadId": "General contractor & supplier asal Kediri untuk struktur beton, fabrikasi baja, atap, MEP, sipil, dan pengadaan — dipercaya PT Gudang Garam Tbk sejak 2012.",
+  "heroHeadlineEn": "Built across 17 cities. Trusted again for 13 years.",
+  "heroSubheadEn": "A Kediri-based general contractor & supplier for concrete structures, steel fabrication, roofing, MEP, civil works, and procurement — trusted by PT Gudang Garam Tbk since 2012.",
+  "established": "28 November 2012",
+  "akta": "Akta Notaris Paulus Bingadiputra, S.H., No. 280",
+  "address": "Jl. Urip Sumoharjo 86, Kediri (Gedung English House / TX Travel)",
+  "city": "Kediri",
+  "province": "Jawa Timur",
+  "postalArea": "Kediri, Jawa Timur",
+  "phone": "0354-673699",
+  "fax": "0354-4674399",
+  "email": "bbpkediri@binabangunperkasa.co.id",
+  "whatsapp": "6285815905699",
+  "workingHours": "Senin–Jumat, 08.00–17.00 WIB",
+  "mapEmbedQuery": "Jl. Urip Sumoharjo 86, Kediri",
+  "officeLat": -7.8265,
+  "officeLng": 112.0182,
+  "legal": {
+    "nib": "9120208142816",
+    "npwp": "03.220.685.6-622.000",
+    "siup": "503/090/419.36/2013",
+    "tdp": "13.11.1.41.0054"
+  },
+  "director": {
+    "name": "Winarto Kho, S.T., M.Eng.",
+    "role": "Direktur / Project Director",
+    "bioId": "Lahir April 1972 di Kediri. Lulus Sarjana Teknik Sipil dari Universitas Kristen Petra Surabaya (1996) dan Master of Engineering Management dari Curtin University of Technology, Perth, Australia Barat (1999). Setelah berkarier di Apple Computer Singapore hingga 2004, membangun beberapa usaha di Kediri termasuk PT. Graha Insan Kreatif (2007), PT. Graha Intan Kreatif (2009), dan PT. Bintang Kediri Sejahtera, sebelum mendirikan PT. Bina Bangun Perkasa pada 2012.",
+    "bioEn": "Born April 1972 in Kediri. Holds a Bachelor of Civil Engineering from Universitas Kristen Petra, Surabaya (1996) and a Master of Engineering Management from Curtin University of Technology, Perth, Western Australia (1999). After a professional career at Apple Computer Singapore until 2004, he built several Kediri-based ventures — PT. Graha Insan Kreatif (2007), PT. Graha Intan Kreatif (2009), and PT. Bintang Kediri Sejahtera — before founding PT. Bina Bangun Perkasa in 2012."
+  },
+  "stats": {
+    "yearsActive": 13,
+    "cities": 17,
+    "projects": 32,
+    "clients": 12
+  },
+  "gapensiMember": true,
+  "iso9001": {
+    "standard": "ISO 9001:2015",
+    "issuer": "SAI Global",
+    "scopeId": "Penyediaan desain, jasa konstruksi sipil, konstruksi baja, mekanikal elektrikal (MEP), serta pengadaan barang dan jasa."
+  },
+  "smk3": {
+    "regulation": "PP No. 50 Tahun 2012",
+    "score": 85.94,
+    "criteriaMet": 55,
+    "criteriaTotal": 64,
+    "category": "Memuaskan",
+    "level": "Tingkat Awal"
+  }
+}

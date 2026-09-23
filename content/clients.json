@@ -1,0 +1,14 @@
+[
+  { "id": "gudang-garam", "name": "PT. Gudang Garam, Tbk.", "city": "Kediri", "province": "Jawa Timur", "since": 2012, "projectCount": 20, "flagship": true },
+  { "id": "bukit-dhoho-indah", "name": "PT. Bukit Dhoho Indah", "city": "Kediri", "province": "Jawa Timur", "flagship": false },
+  { "id": "dhanista-surya-pertiwi", "name": "PT. Dhanista Surya Pertiwi", "city": "Kediri", "province": "Jawa Timur", "flagship": false },
+  { "id": "wulandaya-cahaya-lestari", "name": "PT. Wulandaya Cahaya Lestari", "city": "Surabaya", "province": "Jawa Timur", "flagship": false },
+  { "id": "sumber-pangan-sejahtera", "name": "PT. Sumber Pangan Sejahtera", "city": "Kediri", "province": "Jawa Timur", "flagship": false },
+  { "id": "prima-sejahtera", "name": "CV. Prima Sejahtera", "city": "Kediri", "province": "Jawa Timur", "flagship": false },
+  { "id": "surya-dhoho-investama", "name": "PT. Surya Dhoho Investama", "city": "Kediri", "province": "Jawa Timur", "flagship": false },
+  { "id": "omadata-padma-indonesia", "name": "PT. Omadata Padma Indonesia", "city": "Surabaya", "province": "Jawa Timur", "flagship": false },
+  { "id": "kcic", "name": "PT. Kereta Cepat Indonesia China", "city": "Jakarta", "province": "DKI Jakarta", "flagship": false },
+  { "id": "zeni-tni-ad", "name": "Pusat ZENI TNI AD — Badan Pelaksana Pengadaan", "city": "Jakarta Timur", "province": "DKI Jakarta", "flagship": false },
+  { "id": "rs-reksa-waluya", "name": "RS. Reksa Waluya", "city": "Mojokerto", "province": "Jawa Timur", "flagship": false },
+  { "id": "harapan-jaya-sentosa", "name": "PT. Harapan Jaya Sentosa", "note": "Member of Panbil Group", "city": "Batam", "province": "Kepulauan Riau", "flagship": false }
+]

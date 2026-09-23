@@ -1,0 +1,18 @@
+[
+  { "id": "kato-kr25h", "category": "Mobile / Lifting Crane", "name": "Rough-Terrain Crane KATO KR25H-V3", "spec": "Kapasitas angkat 25 ton", "qty": 1 },
+  { "id": "hino-knuckle", "category": "Mobile / Lifting Crane", "name": "Truck Hino Knuckle Boom Crane", "spec": "Kapasitas angkat 3 ton", "qty": 1 },
+  { "id": "excavator-komatsu", "category": "Land Works", "name": "Excavator Komatsu PC-40", "spec": "Unit gali & muat", "qty": 1 },
+  { "id": "excavator-cat", "category": "Land Works", "name": "Excavator CAT 305.5E2", "spec": "Unit gali & muat", "qty": 1 },
+  { "id": "excavator-yanmar", "category": "Land Works", "name": "Excavator Yanmar V-55", "spec": "Unit gali & muat", "qty": 1 },
+  { "id": "excavator-sany", "category": "Land Works", "name": "Excavator SANY SY75C", "spec": "Unit gali & muat", "qty": 1 },
+  { "id": "dump-truck-hino", "category": "Transport", "name": "Dump Truck Hino Dutro", "spec": "Angkutan material", "qty": 1 },
+  { "id": "light-truck-hino", "category": "Transport", "name": "Light Truck Hino Dutro", "spec": "Angkutan material ringan", "qty": 1 },
+  { "id": "light-truck-mitsubishi", "category": "Transport", "name": "Light Truck Mitsubishi", "spec": "Angkutan material ringan", "qty": 2 },
+  { "id": "self-loader-isuzu", "category": "Transport", "name": "Self Loader Isuzu NMR71", "spec": "Pengangkut alat berat", "qty": 1 },
+  { "id": "light-truck-isuzu", "category": "Transport", "name": "Light Truck Isuzu NMR71", "spec": "Angkutan material ringan", "qty": 1 },
+  { "id": "genset", "category": "Mobile Power", "name": "Diesel Generator", "spec": "Kapasitas 15–42 kVA per unit", "qty": 8 },
+  { "id": "total-station", "category": "Surveying", "name": "Total Station", "spec": "Pemetaan & pengukuran lapangan", "qty": 2 },
+  { "id": "auto-level", "category": "Surveying", "name": "Auto Level / Waterpass", "spec": "Pengukuran elevasi", "qty": 2 },
+  { "id": "steel-tools", "category": "Steel Works", "name": "Inverter, Drilling & Magnetic Drilling Machine", "spec": "Alat potong & bor logam untuk fabrikasi baja", "qty": null },
+  { "id": "forklift", "category": "Material Handling", "name": "Forklift", "spec": "1 unit 3,5 ton + 2 unit 2,5 ton", "qty": 3 }
+]
