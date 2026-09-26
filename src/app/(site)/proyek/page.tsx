@@ -30,9 +30,9 @@ export default async function ProyekPage({
 
   return (
     <>
-      <section className="border-b border-[var(--color-line)] bg-[var(--color-surface)]">
+      <section className="border-b border-[var(--color-line)] bg-[var(--color-band)]">
         <div className="mx-auto max-w-6xl px-4 py-12 sm:px-6 sm:py-16">
-          <p className="font-data text-xs uppercase tracking-[0.14em] text-[var(--color-teal-text)]">Referensi Proyek</p>
+          <p className="eyebrow font-data text-xs uppercase tracking-[0.14em] text-[var(--color-teal-text)]">Referensi Proyek</p>
           <h1 className="mt-2 max-w-2xl text-[clamp(1.8rem,3.4vw,2.5rem)] font-extrabold text-[var(--color-ink)]">
             {allProjects.length}+ pekerjaan di {cities.length} kota sejak 2012
           </h1>

@@ -19,9 +19,9 @@ export default async function LayananPage() {
 
   return (
     <>
-      <section className="border-b border-[var(--color-line)] bg-[var(--color-surface)]">
+      <section className="border-b border-[var(--color-line)] bg-[var(--color-band)]">
         <div className="mx-auto max-w-6xl px-4 py-14 sm:px-6 sm:py-20">
-          <p className="font-data text-xs uppercase tracking-[0.14em] text-[var(--color-teal-text)]">Layanan</p>
+          <p className="eyebrow font-data text-xs uppercase tracking-[0.14em] text-[var(--color-teal-text)]">Layanan</p>
           <h1 className="mt-2 max-w-2xl text-[clamp(1.9rem,3.6vw,2.75rem)] font-extrabold text-[var(--color-ink)]">
             Enam lini kerja, satu penanggung jawab
           </h1>
@@ -70,7 +70,7 @@ export default async function LayananPage() {
           </p>
           <Link
             href="/hubungi"
-            className="inline-flex items-center gap-2 rounded-md bg-[var(--color-teal)] px-6 py-3 text-[15px] font-semibold text-[var(--color-on-teal)] hover:bg-[var(--color-teal-deep)]"
+            className="btn-primary inline-flex items-center gap-2 rounded-full px-6 py-3 text-[15px] font-semibold"
           >
             Kirim Rencana Proyek Anda <ArrowRight size={16} aria-hidden="true" />
           </Link>

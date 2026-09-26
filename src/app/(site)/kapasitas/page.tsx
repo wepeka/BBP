@@ -18,9 +18,9 @@ export default async function KapasitasPage() {
 
   return (
     <>
-      <section className="border-b border-[var(--color-line)] bg-[var(--color-surface)]">
+      <section className="border-b border-[var(--color-line)] bg-[var(--color-band)]">
         <div className="mx-auto max-w-6xl px-4 py-14 sm:px-6 sm:py-20">
-          <p className="font-data text-xs uppercase tracking-[0.14em] text-[var(--color-teal-text)]">Kapasitas &amp; Alat</p>
+          <p className="eyebrow font-data text-xs uppercase tracking-[0.14em] text-[var(--color-teal-text)]">Kapasitas &amp; Alat</p>
           <h1 className="mt-2 max-w-2xl text-[clamp(1.9rem,3.6vw,2.75rem)] font-extrabold text-[var(--color-ink)]">
             Alat berat &amp; workshop milik sendiri
           </h1>
@@ -34,7 +34,7 @@ export default async function KapasitasPage() {
       <section className="mx-auto max-w-6xl px-4 py-14 sm:px-6 sm:py-16">
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
           {WORKSHOP.map((w) => (
-            <div key={w.label} className="rounded-md border border-[var(--color-line)] bg-[var(--color-surface)] p-5">
+            <div key={w.label} className="card-lift rounded-xl border border-[var(--color-line)] bg-[var(--color-surface)] p-5">
               <Warehouse size={20} className="text-[var(--color-teal)]" aria-hidden="true" />
               <p className="mt-3 font-[family-name:var(--font-display)] text-xl font-extrabold tabular-nums text-[var(--color-ink)]">
                 {w.value}
@@ -89,7 +89,7 @@ export default async function KapasitasPage() {
       </section>
 
       <section className="mx-auto max-w-6xl px-4 py-14 sm:px-6">
-        <div className="flex items-start gap-4 rounded-md border border-[var(--color-line)] bg-[var(--color-surface)] p-6">
+        <div className="flex items-start gap-4 card-lift rounded-xl border border-[var(--color-line)] bg-[var(--color-surface)] p-6">
           <Gauge size={22} className="mt-0.5 shrink-0 text-[var(--color-teal)]" aria-hidden="true" />
           <p className="text-[14.5px] leading-relaxed text-[var(--color-ink-2)]">
             Kapasitas angkat terbesar BBP adalah rough-terrain crane <b className="text-[var(--color-ink)]">25 ton</b>,

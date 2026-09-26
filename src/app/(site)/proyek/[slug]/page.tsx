@@ -50,7 +50,7 @@ export default async function ProjectDetailPage({
 
   return (
     <>
-      <div className="border-b border-[var(--color-line)] bg-[var(--color-surface)]">
+      <div className="border-b border-[var(--color-line)] bg-[var(--color-band)]">
         <div className="mx-auto max-w-6xl px-4 py-4 sm:px-6">
           <nav aria-label="Breadcrumb" className="flex items-center gap-1.5 text-[13px] text-[var(--color-ink-3)]">
             <Link href="/" className="hover:text-[var(--color-ink)]">
@@ -89,7 +89,7 @@ export default async function ProjectDetailPage({
         <div className="mt-8 grid gap-8 lg:grid-cols-[1.3fr_1fr]">
           <ProjectGallery images={project.images} alt={project.titleId} />
 
-          <aside className="rounded-md border border-[var(--color-line)] bg-[var(--color-surface)] p-6">
+          <aside className="rounded-xl border border-[var(--color-line)] bg-[var(--color-surface)] p-6">
             <h2 className="font-data text-xs font-medium uppercase tracking-[0.12em] text-[var(--color-ink-3)]">
               Lembar Data
             </h2>

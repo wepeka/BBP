@@ -129,7 +129,7 @@ export function RfqForm({ services }: { services: Service[] }) {
       <button
         type="submit"
         disabled={isPending}
-        className="w-full rounded-md bg-[var(--color-teal)] py-3.5 text-[15px] font-semibold text-[var(--color-on-teal)] transition-colors hover:bg-[var(--color-teal-deep)] disabled:cursor-not-allowed disabled:opacity-60"
+        className="btn-primary w-full rounded-full py-3.5 text-[15px] font-semibold disabled:cursor-not-allowed disabled:opacity-60"
       >
         {isPending ? "Mengirim…" : "Kirim Permintaan"}
       </button>

@@ -1,32 +1,36 @@
+import Image from "next/image";
+
 /**
- * Recreated in SVG from the printed BBP company profile so it stays crisp
- * at any size, instead of the low-resolution raster in that document.
- * Keeps the original mark: a derrick/tower silhouette on a yellow disc,
- * paired with the wordmark.
+ * Official BBP logo (disc + derrick tower, vertical "bina", and the
+ * "BANGUN PERKASA" plate). Source artwork supplied by BBP, with its white
+ * background removed so it sits on both light and dark themes.
  */
-export function LogoMark({ className }: { className?: string }) {
+const LOGO_SRC = "/images/brand/logo-bbp.png";
+const LOGO_W = 487;
+const LOGO_H = 325;
+
+export function LogoMark({ className, priority }: { className?: string; priority?: boolean }) {
   return (
-    <svg viewBox="0 0 64 64" className={className} aria-hidden="true">
-      <circle cx="32" cy="32" r="30" fill="var(--color-yellow)" />
-      <g stroke="var(--color-teal-deep)" strokeWidth="3" fill="none" strokeLinecap="round">
-        <path d="M32 14 L20 48 M32 14 L44 48" />
-        <path d="M24 24 L40 24 M22.5 32 L41.5 32 M21 40 L43 40" />
-        <path d="M32 14 L32 8" />
-      </g>
-      <rect x="14" y="48" width="36" height="4" rx="1" fill="var(--color-teal-deep)" />
-    </svg>
+    <Image
+      src={LOGO_SRC}
+      alt=""
+      width={LOGO_W}
+      height={LOGO_H}
+      priority={priority}
+      className={`object-contain ${className ?? "h-10 w-auto"}`}
+    />
   );
 }
 
-export function LogoFull({ className }: { className?: string }) {
+export function LogoFull({ className, priority }: { className?: string; priority?: boolean }) {
   return (
-    <span className={`inline-flex items-center gap-2.5 ${className ?? ""}`}>
-      <LogoMark className="h-9 w-9 shrink-0" />
-      <span className="leading-tight">
-        <span className="block font-[family-name:var(--font-display)] text-[15px] font-extrabold tracking-tight text-[var(--color-ink)]">
-          BINA BANGUN PERKASA
+    <span className={`inline-flex items-center gap-3 ${className ?? ""}`}>
+      <LogoMark className="h-12 w-auto shrink-0" priority={priority} />
+      <span className="hidden border-l border-[var(--color-line)] pl-3 leading-tight sm:block lg:hidden xl:block">
+        <span className="block font-[family-name:var(--font-display)] text-[12.5px] font-extrabold tracking-tight text-[var(--color-ink)]">
+          PT. BINA BANGUN PERKASA
         </span>
-        <span className="block font-data text-[10px] uppercase tracking-[0.14em] text-[var(--color-teal-text)]">
+        <span className="block font-data text-[9.5px] uppercase tracking-[0.14em] text-[var(--color-teal-text)]">
           General Contractor &amp; Supplier
         </span>
       </span>

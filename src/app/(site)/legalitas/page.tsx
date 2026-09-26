@@ -41,9 +41,9 @@ export default async function LegalitasPage() {
 
   return (
     <>
-      <section className="border-b border-[var(--color-line)] bg-[var(--color-surface)]">
+      <section className="border-b border-[var(--color-line)] bg-[var(--color-band)]">
         <div className="mx-auto max-w-6xl px-4 py-14 sm:px-6 sm:py-20">
-          <p className="font-data text-xs uppercase tracking-[0.14em] text-[var(--color-teal-text)]">Legalitas &amp; Sertifikasi</p>
+          <p className="eyebrow font-data text-xs uppercase tracking-[0.14em] text-[var(--color-teal-text)]">Legalitas &amp; Sertifikasi</p>
           <h1 className="mt-2 max-w-2xl text-[clamp(1.9rem,3.6vw,2.75rem)] font-extrabold text-[var(--color-ink)]">
             Semua dokumen dapat diverifikasi
           </h1>
@@ -81,7 +81,7 @@ export default async function LegalitasPage() {
                 {certificates
                   .filter((c) => c.group === group)
                   .map((c) => (
-                    <div key={c.id} className="rounded-md border border-[var(--color-line)] bg-[var(--color-surface)] p-5">
+                    <div key={c.id} className="card-lift rounded-xl border border-[var(--color-line)] bg-[var(--color-surface)] p-5">
                       <div className="flex items-start justify-between gap-3">
                         <p className="font-semibold leading-snug text-[var(--color-ink)]">{c.name}</p>
                         <StatusBadge status={c.status} />

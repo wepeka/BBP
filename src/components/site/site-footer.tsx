@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { MapPin, Phone, Printer, Mail, Clock } from "lucide-react";
-import { LogoFull } from "@/components/logo";
+import { LogoMark } from "@/components/logo";
 import type { Settings } from "@/lib/types";
 
 const LINKS = [
@@ -16,10 +16,11 @@ const LINKS = [
 export function SiteFooter({ settings }: { settings: Settings }) {
   const year = new Date().getFullYear();
   return (
-    <footer className="border-t border-[var(--color-line)] bg-[var(--color-surface)]">
+    <footer className="relative overflow-hidden border-t border-[var(--color-line)] bg-[var(--color-band)] backdrop-blur-sm">
+      <div aria-hidden="true" className="h-1 bg-[linear-gradient(90deg,var(--color-teal),var(--color-yellow),var(--color-teal))] bg-[size:200%_100%] [animation:footer-bar_8s_linear_infinite]" />
       <div className="mx-auto grid max-w-6xl gap-10 px-4 py-14 sm:px-6 md:grid-cols-[1.3fr_1fr_1fr]">
         <div>
-          <LogoFull />
+          <LogoMark className="h-16 w-auto" />
           <p className="mt-4 max-w-sm text-[14.5px] text-[var(--color-ink-2)]">
             {settings.taglineLong}. Berdiri sejak {settings.established}, mengerjakan struktur
             beton, fabrikasi baja, MEP, dan sipil di seluruh Indonesia.
@@ -55,7 +56,7 @@ export function SiteFooter({ settings }: { settings: Settings }) {
           <ul className="mt-4 space-y-2.5 text-[14.5px]">
             {LINKS.map((l) => (
               <li key={l.href}>
-                <Link href={l.href} className="text-[var(--color-ink-2)] hover:text-[var(--color-teal-text)]">
+                <Link href={l.href} className="inline-block text-[var(--color-ink-2)] transition-all duration-300 hover:translate-x-1 hover:text-[var(--color-teal-text)]">
                   {l.label}
                 </Link>
               </li>
