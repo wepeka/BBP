@@ -30,10 +30,8 @@ Situs mengikuti preferensi sistem perangkat secara default, dan pengunjung bisa 
 
 URL: `/admin` (otomatis diarahkan ke `/admin/login` jika belum masuk)
 
-Kredensial default (**ganti setelah instalasi pertama**, lihat di bawah):
-
 - **Nama pengguna:** `admin`
-- **Kata sandi:** `BbpKediri#2026`
+- **Kata sandi:** tidak dicatat di repo ini (tanyakan ke pengelola situs)
 
 Untuk mengganti kata sandi admin, buat hash baru lalu tempel ke `content/admin-users.json`:
 

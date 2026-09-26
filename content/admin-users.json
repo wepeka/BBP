@@ -1,8 +1,8 @@
 [
   {
     "username": "admin",
-    "passwordHash": "0b8de2c9a5478ef1f138562597e16eacd62a42a8f5e034eb5c27348e8a69ef82ca5b6e30c0c966253f0deaed7a8786e16c63c44c9e3377b6b8cc0e9a5d6428f8",
-    "salt": "099c06cf5a8217e926a2861d7b50b867",
+    "passwordHash": "2bdae2a2a7a18136a0783ab64f4806ede2e24d811030b8b5ed1eafde523905e4d3a3a8baa9d8bf09625007ce7c266523e2b4367777b0b894ea41e50a0fea6d6f",
+    "salt": "11dc484dffc1d0a5938f108242bbcd41",
     "name": "Admin BBP",
     "role": "admin"
   }
