@@ -10,7 +10,7 @@ export default async function AdminPengaturanPage() {
 
   return (
     <div>
-      <PageHeader title="Pengaturan Situs" description="Informasi ini tampil di beranda, header, dan footer seluruh halaman." />
+      <PageHeader title="Pengaturan Situs" description="Identitas, kontak, dan profil direktur. Tulisan di tiap halaman diubah lewat menu Teks Website." />
       <form action={updateSettingsAction} className="max-w-3xl space-y-8">
         <Card className="space-y-5">
           <h2 className="text-[15px] font-bold text-[var(--color-ink)]">Identitas Perusahaan</h2>
@@ -19,12 +19,6 @@ export default async function AdminPengaturanPage() {
             <Field label="Tagline" name="tagline" required defaultValue={s.tagline} />
           </div>
           <Field label="Tagline Panjang" name="taglineLong" defaultValue={s.taglineLong} />
-        </Card>
-
-        <Card className="space-y-5">
-          <h2 className="text-[15px] font-bold text-[var(--color-ink)]">Beranda</h2>
-          <Field label="Headline Hero" name="heroHeadlineId" required defaultValue={s.heroHeadlineId} />
-          <TextAreaField label="Sub-headline Hero" name="heroSubheadId" rows={3} defaultValue={s.heroSubheadId} />
         </Card>
 
         <Card className="space-y-5">

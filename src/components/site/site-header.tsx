@@ -17,7 +17,7 @@ const NAV = [
   { href: "/klien", label: "Klien" },
 ] as const;
 
-export function SiteHeader({ settings }: { settings: Settings }) {
+export function SiteHeader({ settings, ctaLabel }: { settings: Settings; ctaLabel: string }) {
   const pathname = usePathname();
   const [open, setOpen] = useState(false);
 
@@ -96,7 +96,7 @@ export function SiteHeader({ settings }: { settings: Settings }) {
           </a>
           <ThemeToggle />
           <Link href="/hubungi" className="btn-primary whitespace-nowrap rounded-full px-5 py-2.5 text-sm font-semibold">
-            Minta Penawaran
+            {ctaLabel}
           </Link>
         </div>
 
@@ -153,7 +153,7 @@ export function SiteHeader({ settings }: { settings: Settings }) {
               href="/hubungi"
               className="btn-primary rounded-full py-3 text-center text-sm font-semibold"
             >
-              Minta Penawaran
+              {ctaLabel}
             </Link>
           </div>
         </div>

@@ -1,10 +1,9 @@
 "use server";
 
-import { promises as fs } from "fs";
-import path from "path";
 import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
 import { getSession } from "@/lib/auth";
+import { saveUpload } from "@/lib/store";
 import {
   createProject,
   updateProject,
@@ -23,16 +22,12 @@ async function saveUploads(files: File[], slug: string): Promise<string[]> {
   const valid = files.filter((f) => f && f.size > 0);
   if (!valid.length) return [];
 
-  const dir = path.join(process.cwd(), "public", "images", "uploads", slug);
-  await fs.mkdir(dir, { recursive: true });
-
   const saved: string[] = [];
   for (const file of valid) {
     const ext = (file.name.split(".").pop() || "jpg").toLowerCase().replace(/[^a-z0-9]/g, "");
     const filename = `${Date.now()}-${Math.random().toString(36).slice(2, 7)}.${ext || "jpg"}`;
     const buffer = Buffer.from(await file.arrayBuffer());
-    await fs.writeFile(path.join(dir, filename), buffer);
-    saved.push(`/images/uploads/${slug}/${filename}`);
+    saved.push(await saveUpload(`images/uploads/${slug}/${filename}`, buffer, file.type || "image/jpeg"));
   }
   return saved;
 }

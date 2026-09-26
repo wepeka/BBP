@@ -1,16 +1,11 @@
 import type { Metadata } from "next";
 import { FileCheck2, AlertTriangle, Download, ShieldCheck } from "lucide-react";
-import { getCertificates, getSettings } from "@/lib/repo";
+import { getCertificates, getSettings, getTexts } from "@/lib/repo";
+import { fill } from "@/lib/texts";
 import type { Certificate } from "@/lib/types";
 
 export const metadata: Metadata = { title: "Legalitas & Sertifikasi" };
 
-const GROUP_LABELS: Record<Certificate["group"], string> = {
-  legalitas: "Legalitas Perusahaan",
-  sbu: "Sertifikat Badan Usaha (SBU) — Kualifikasi M1",
-  sistem_manajemen: "Sistem Manajemen",
-  keanggotaan: "Keanggotaan",
-};
 
 function StatusBadge({ status }: { status: Certificate["status"] }) {
   if (status === "berlaku") {
@@ -35,7 +30,7 @@ function StatusBadge({ status }: { status: Certificate["status"] }) {
 }
 
 export default async function LegalitasPage() {
-  const [certificates, settings] = await Promise.all([getCertificates(), getSettings()]);
+  const [certificates, settings, t] = await Promise.all([getCertificates(), getSettings(), getTexts()]);
   const groups = Array.from(new Set(certificates.map((c) => c.group)));
   const needsVerification = certificates.some((c) => c.status === "perlu_verifikasi");
 
@@ -43,9 +38,9 @@ export default async function LegalitasPage() {
     <>
       <section className="border-b border-[var(--color-line)] bg-[var(--color-band)]">
         <div className="mx-auto max-w-6xl px-4 py-14 sm:px-6 sm:py-20">
-          <p className="eyebrow font-data text-xs uppercase tracking-[0.14em] text-[var(--color-teal-text)]">Legalitas &amp; Sertifikasi</p>
+          <p className="eyebrow font-data text-xs uppercase tracking-[0.14em] text-[var(--color-teal-text)]">{t["legal.eyebrow"]}</p>
           <h1 className="mt-2 max-w-2xl text-[clamp(1.9rem,3.6vw,2.75rem)] font-extrabold text-[var(--color-ink)]">
-            Semua dokumen dapat diverifikasi
+            {t["legal.title"]}
           </h1>
           <div className="mt-6 flex flex-wrap gap-4 font-data text-[13.5px] text-[var(--color-ink-2)]">
             <span>NIB {settings.legal.nib}</span>
@@ -61,10 +56,8 @@ export default async function LegalitasPage() {
         <div className="border-b border-[var(--color-line)] bg-[var(--color-yellow)]/25">
           <div className="mx-auto flex max-w-6xl items-start gap-3 px-4 py-4 sm:px-6">
             <AlertTriangle size={18} className="mt-0.5 shrink-0 text-[var(--color-yellow-ink)]" aria-hidden="true" />
-            <p className="text-[14px] leading-relaxed text-[var(--color-ink)]">
-              Beberapa Sertifikat Badan Usaha (SBU) berstatus <b>perlu verifikasi</b> masa berlaku
-              melalui SIKaP/LPJK. Nomor sertifikat di bawah tetap sah; tanggal berlaku terbaru akan
-              diperbarui admin setelah dikonfirmasi.
+            <p className="whitespace-pre-line text-[14px] leading-relaxed text-[var(--color-ink)]">
+              {t["legal.warning"]}
             </p>
           </div>
         </div>
@@ -75,7 +68,7 @@ export default async function LegalitasPage() {
           {groups.map((group) => (
             <div key={group}>
               <h2 className="font-data text-[13px] font-medium uppercase tracking-[0.1em] text-[var(--color-ink-3)]">
-                {GROUP_LABELS[group]}
+                {t[`legal.group.${group}`]}
               </h2>
               <div className="mt-4 grid gap-4 sm:grid-cols-2">
                 {certificates
@@ -119,14 +112,19 @@ export default async function LegalitasPage() {
           <ShieldCheck size={22} className="mt-0.5 shrink-0 text-[var(--color-teal)]" aria-hidden="true" />
           <div>
             <p className="text-[14.5px] font-semibold text-[var(--color-ink)]">
-              Sistem Manajemen Mutu &amp; K3
+              {t["legal.system.title"]}
             </p>
-            <p className="mt-1 text-[14px] leading-relaxed text-[var(--color-ink-2)]">
-              Bersertifikat <b>{settings.iso9001.standard}</b> dari {settings.iso9001.issuer}, dan
-              menerapkan <b>SMK3</b> sesuai {settings.smk3.regulation} dengan pencapaian{" "}
-              <b>{settings.smk3.score}%</b> ({settings.smk3.criteriaMet} dari {settings.smk3.criteriaTotal}{" "}
-              kriteria), kategori <b>{settings.smk3.category}</b>, tingkat {settings.smk3.level}.
-              Anggota <b>GAPENSI</b>.
+            <p className="mt-1 whitespace-pre-line text-[14px] leading-relaxed text-[var(--color-ink-2)]">
+              {fill(t["legal.system.body"], {
+                iso: settings.iso9001.standard,
+                penerbitIso: settings.iso9001.issuer,
+                regulasiSmk3: settings.smk3.regulation,
+                skorSmk3: settings.smk3.score,
+                kriteriaTerpenuhi: settings.smk3.criteriaMet,
+                kriteriaTotal: settings.smk3.criteriaTotal,
+                kategoriSmk3: settings.smk3.category,
+                tingkatSmk3: settings.smk3.level,
+              })}
             </p>
           </div>
         </div>

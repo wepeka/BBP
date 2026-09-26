@@ -2,6 +2,7 @@ import Link from "next/link";
 import { MapPin, Phone, Printer, Mail, Clock } from "lucide-react";
 import { LogoMark } from "@/components/logo";
 import type { Settings } from "@/lib/types";
+import { fill, type Texts } from "@/lib/texts";
 
 const LINKS = [
   { href: "/tentang", label: "Tentang Kami" },
@@ -13,7 +14,7 @@ const LINKS = [
   { href: "/hubungi", label: "Minta Penawaran" },
 ];
 
-export function SiteFooter({ settings }: { settings: Settings }) {
+export function SiteFooter({ settings, texts: t }: { settings: Settings; texts: Texts }) {
   const year = new Date().getFullYear();
   return (
     <footer className="relative overflow-hidden border-t border-[var(--color-line)] bg-[var(--color-band)] backdrop-blur-sm">
@@ -21,9 +22,8 @@ export function SiteFooter({ settings }: { settings: Settings }) {
       <div className="mx-auto grid max-w-6xl gap-10 px-4 py-14 sm:px-6 md:grid-cols-[1.3fr_1fr_1fr]">
         <div>
           <LogoMark className="h-16 w-auto" />
-          <p className="mt-4 max-w-sm text-[14.5px] text-[var(--color-ink-2)]">
-            {settings.taglineLong}. Berdiri sejak {settings.established}, mengerjakan struktur
-            beton, fabrikasi baja, MEP, dan sipil di seluruh Indonesia.
+          <p className="mt-4 max-w-sm whitespace-pre-line text-[14.5px] text-[var(--color-ink-2)]">
+            {fill(t["common.footer.about"], { taglinePanjang: settings.taglineLong, tanggalBerdiri: settings.established })}
           </p>
           <dl className="mt-5 space-y-2.5 font-data text-[13px] text-[var(--color-ink-2)]">
             <div className="flex gap-2.5">
@@ -73,19 +73,13 @@ export function SiteFooter({ settings }: { settings: Settings }) {
             <div>NPWP {settings.legal.npwp}</div>
             <div>SIUP {settings.legal.siup}</div>
           </dl>
-          <p className="mt-4 text-[13px] text-[var(--color-ink-2)]">
-            Anggota <span className="font-medium text-[var(--color-ink)]">GAPENSI</span> ·
-            Bersertifikat <span className="font-medium text-[var(--color-ink)]">ISO 9001</span> &amp;{" "}
-            <span className="font-medium text-[var(--color-ink)]">SMK3</span>
-          </p>
+          <p className="mt-4 text-[13px] text-[var(--color-ink-2)]">{t["common.footer.memberships"]}</p>
         </div>
       </div>
 
       <div className="border-t border-[var(--color-line)]">
         <div className="mx-auto flex max-w-6xl flex-col gap-2 px-4 py-5 text-[12.5px] text-[var(--color-ink-3)] sm:flex-row sm:items-center sm:justify-between sm:px-6">
-          <p>
-            © {year} {settings.companyName}. Seluruh hak cipta dilindungi.
-          </p>
+          <p>{fill(t["common.footer.copyright"], { tahun: year, namaPerusahaan: settings.companyName })}</p>
           <p>{settings.akta}</p>
         </div>
       </div>

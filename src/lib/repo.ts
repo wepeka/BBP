@@ -10,6 +10,7 @@ import type {
   Settings,
   RfqEntry,
 } from "./types";
+import { TEXT_DEFAULTS, type TextKey, type Texts } from "./texts";
 
 /* ---------- Projects ---------- */
 
@@ -117,6 +118,18 @@ export async function getServices(): Promise<Service[]> {
   return items.slice().sort((a, b) => a.order - b.order);
 }
 
+export async function updateService(
+  id: string,
+  patch: Partial<Pick<Service, "nameId" | "nameEn" | "shortId" | "descriptionId">>
+): Promise<Service | null> {
+  const items = await readCollection<Service[]>("services", []);
+  const idx = items.findIndex((s) => s.id === id);
+  if (idx === -1) return null;
+  items[idx] = { ...items[idx], ...patch };
+  await writeCollection("services", items);
+  return items[idx];
+}
+
 /* ---------- Equipment ---------- */
 
 export async function getEquipment(): Promise<Equipment[]> {
@@ -128,6 +141,18 @@ export async function getEquipment(): Promise<Equipment[]> {
 export async function getTeam(): Promise<TeamMember[]> {
   const items = await readCollection<TeamMember[]>("team", []);
   return items.slice().sort((a, b) => a.order - b.order);
+}
+
+/** Replaces the whole team list (the admin edits it as one list). */
+export async function replaceTeam(members: { name: string; role: string }[]): Promise<void> {
+  const current = await readCollection<TeamMember[]>("team", []);
+  const next: TeamMember[] = members.map((m, i) => ({
+    id: current[i]?.id ?? newId("t"),
+    name: m.name,
+    role: m.role,
+    order: i + 1,
+  }));
+  await writeCollection("team", next);
 }
 
 /* ---------- Certificates ---------- */
@@ -196,4 +221,35 @@ export async function updateRfqEntry(
   items[idx] = { ...items[idx], ...patch };
   await writeCollection("rfq", items);
   return items[idx];
+}
+
+/* ---------- Page texts ---------- */
+
+/** Only texts the admin changed are stored; everything else uses TEXT_DEFAULTS. */
+export async function getTextOverrides(): Promise<Partial<Texts>> {
+  return readCollection<Partial<Texts>>("texts", {});
+}
+
+/** Defaults, plus the hero copy that used to live in settings (kept until edited here). */
+async function getTextBase(): Promise<Texts> {
+  const settings = await getSettings();
+  const base = { ...TEXT_DEFAULTS };
+  if (settings.heroHeadlineId) base["home.hero.title"] = settings.heroHeadlineId;
+  if (settings.heroSubheadId) base["home.hero.subtitle"] = settings.heroSubheadId;
+  return base;
+}
+
+export async function getTexts(): Promise<Texts> {
+  const [base, overrides] = await Promise.all([getTextBase(), getTextOverrides()]);
+  return { ...base, ...overrides };
+}
+
+/** Saves the given texts; a value equal to its default removes the override. */
+export async function updateTexts(values: Partial<Record<TextKey, string>>): Promise<void> {
+  const [base, overrides] = await Promise.all([getTextBase(), getTextOverrides()]);
+  for (const [key, value] of Object.entries(values) as [TextKey, string][]) {
+    if (value === base[key]) delete overrides[key];
+    else overrides[key] = value;
+  }
+  await writeCollection("texts", overrides);
 }

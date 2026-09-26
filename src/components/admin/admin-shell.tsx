@@ -13,6 +13,7 @@ import {
   Menu,
   X,
   ExternalLink,
+  Type,
   LogOut,
 } from "lucide-react";
 import { LogoFull } from "@/components/logo";
@@ -25,6 +26,7 @@ const NAV = [
   { href: "/admin/klien", label: "Klien", icon: Users, exact: false },
   { href: "/admin/sertifikat", label: "Sertifikat", icon: ShieldCheck, exact: false },
   { href: "/admin/rfq", label: "Inbox RFQ", icon: Inbox, exact: false },
+  { href: "/admin/teks", label: "Teks Website", icon: Type, exact: false },
   { href: "/admin/pengaturan", label: "Pengaturan", icon: Settings, exact: false },
 ] as const;
 

@@ -11,7 +11,8 @@ import {
   ShieldCheck,
   Award,
 } from "lucide-react";
-import { getSettings, getServices, getClients, getProjects, getCertificates } from "@/lib/repo";
+import { getSettings, getServices, getClients, getProjects, getCertificates, getTexts } from "@/lib/repo";
+import { fill } from "@/lib/texts";
 import { ProjectCard } from "@/components/site/project-card";
 import { ProjectsMapClient } from "@/components/site/projects-map-loader";
 import { CountUp } from "@/components/site/count-up";
@@ -26,19 +27,20 @@ const SERVICE_ICONS: Record<string, React.ComponentType<{ size?: number; classNa
 };
 
 export default async function HomePage() {
-  const [settings, services, clients, projects, certificates] = await Promise.all([
+  const [settings, services, clients, projects, certificates, t] = await Promise.all([
     getSettings(),
     getServices(),
     getClients(),
     getProjects(),
     getCertificates(),
+    getTexts(),
   ]);
 
   // Split "Dibangun di 17 kota. Dipercaya lagi selama 13 tahun." so the
   // second sentence gets the highlighter sweep.
-  const dot = settings.heroHeadlineId.indexOf(". ");
-  const headlineA = dot === -1 ? settings.heroHeadlineId : settings.heroHeadlineId.slice(0, dot + 1);
-  const headlineB = dot === -1 ? "" : settings.heroHeadlineId.slice(dot + 2);
+  const dot = t["home.hero.title"].indexOf(". ");
+  const headlineA = dot === -1 ? t["home.hero.title"] : t["home.hero.title"].slice(0, dot + 1);
+  const headlineB = dot === -1 ? "" : t["home.hero.title"].slice(dot + 2);
 
   const featured = projects.filter((p) => p.featured).slice(0, 6);
   const heroImage = "/images/hero/1.jpeg";
@@ -59,10 +61,10 @@ export default async function HomePage() {
               style={{ "--d": "0ms" } as React.CSSProperties}
             >
               <span className="pulse-dot h-2 w-2 rounded-full bg-[var(--color-teal)] text-[var(--color-teal)]" />
-              General Contractor &amp; Supplier · Kediri
+              {t["home.hero.badge"]}
             </p>
             <h1
-              className="hero-in mt-6 text-[clamp(2.2rem,5vw,3.75rem)] font-black leading-[1.04] tracking-[-0.02em] text-[var(--color-ink)]"
+              className="hero-in mt-6 whitespace-pre-line text-[clamp(2.2rem,5vw,3.75rem)] font-black leading-[1.04] tracking-[-0.02em] text-[var(--color-ink)]"
               style={{ "--d": "90ms" } as React.CSSProperties}
             >
               <span className="text-[var(--color-teal-text)]">{headlineA}</span>
@@ -74,24 +76,24 @@ export default async function HomePage() {
               )}
             </h1>
             <p
-              className="hero-in mt-6 max-w-xl text-[17px] leading-relaxed text-[var(--color-ink-2)]"
+              className="hero-in mt-6 max-w-xl whitespace-pre-line text-[17px] leading-relaxed text-[var(--color-ink-2)]"
               style={{ "--d": "180ms" } as React.CSSProperties}
             >
-              {settings.heroSubheadId}
+              {t["home.hero.subtitle"]}
             </p>
             <div className="hero-in mt-9 flex flex-wrap gap-3" style={{ "--d": "270ms" } as React.CSSProperties}>
               <Link
                 href="/hubungi"
                 className="btn-primary inline-flex items-center gap-2 rounded-full px-7 py-3.5 text-[15px] font-semibold"
               >
-                Kirim Rencana Proyek Anda
+                {t["home.hero.ctaPrimary"]}
                 <ArrowRight size={17} aria-hidden="true" />
               </Link>
               <Link
                 href="/proyek"
                 className="btn-ghost inline-flex items-center gap-2 rounded-full px-7 py-3.5 text-[15px] font-semibold"
               >
-                Lihat Proyek Kami
+                {t["home.hero.ctaSecondary"]}
               </Link>
             </div>
           </div>
@@ -117,7 +119,7 @@ export default async function HomePage() {
               />
               <div className="absolute inset-0 bg-gradient-to-t from-black/45 via-transparent to-transparent" />
               <p className="absolute bottom-4 left-5 right-5 font-data text-[11px] uppercase tracking-[0.14em] text-white/85">
-                Struktur baja · Gudang industri
+                {t["home.hero.imageCaption"]}
               </p>
             </div>
 
@@ -127,19 +129,15 @@ export default async function HomePage() {
                 <ShieldCheck size={20} aria-hidden="true" />
               </span>
               <span className="leading-tight">
-                <span className="block text-[13.5px] font-bold text-[var(--color-ink)]">ISO 9001 &amp; SMK3</span>
-                <span className="block text-[12px] text-[var(--color-ink-3)]">Skor SMK3 {settings.smk3.score}%</span>
+                <span className="block text-[13.5px] font-bold text-[var(--color-ink)]">{t["home.hero.badgeTitle"]}</span>
+                <span className="block text-[12px] text-[var(--color-ink-3)]">{fill(t["home.hero.badgeText"], { skorSmk3: settings.smk3.score })}</span>
               </span>
             </div>
             <div className="float-y-slow absolute -bottom-6 right-2 flex items-center gap-3 rounded-2xl bg-[var(--color-panel-dark)] px-4 py-3 text-[var(--color-on-panel-dark)] shadow-[var(--shadow-lift)] sm:-right-6">
               <span className="font-[family-name:var(--font-display)] text-3xl font-black text-[var(--color-yellow)]">
                 {settings.stats.yearsActive}+
               </span>
-              <span className="text-[12.5px] leading-tight opacity-80">
-                tahun
-                <br />
-                dipercaya
-              </span>
+              <span className="whitespace-pre-line text-[12.5px] leading-tight opacity-80">{t["home.hero.yearsBadge"]}</span>
             </div>
           </div>
         </div>
@@ -149,10 +147,10 @@ export default async function HomePage() {
           <div className="mx-auto grid max-w-6xl grid-cols-2 sm:grid-cols-4">
             {(
               [
-                [settings.stats.yearsActive, "+", "tahun beroperasi"],
-                [cities, "", "kota di Indonesia"],
-                [settings.stats.projects, "+", "referensi pekerjaan"],
-                [settings.stats.clients, "", "klien korporat"],
+                [settings.stats.yearsActive, "+", t["home.stats.years"]],
+                [cities, "", t["home.stats.cities"]],
+                [settings.stats.projects, "+", t["home.stats.projects"]],
+                [settings.stats.clients, "", t["home.stats.clients"]],
               ] as const
             ).map(([n, suffix, l], i) => (
               <div
@@ -176,7 +174,7 @@ export default async function HomePage() {
       <section className="border-b border-[var(--color-line)] bg-[var(--color-band-2)] py-12">
         <div className="mx-auto max-w-6xl px-4 sm:px-6">
           <p className="font-data text-center text-xs uppercase tracking-[0.14em] text-[var(--color-ink-3)]">
-            Dipercaya berulang oleh klien industri &amp; instansi
+            {t["home.clients.eyebrow"]}
           </p>
           {flagshipClient && (
             <p className="mt-5 text-center">
@@ -210,9 +208,9 @@ export default async function HomePage() {
       {/* ---------- Services ---------- */}
       <section className="mx-auto max-w-6xl px-4 py-16 sm:px-6 sm:py-24">
         <div className="mb-12 max-w-2xl">
-          <p className="eyebrow font-data text-xs uppercase tracking-[0.14em] text-[var(--color-teal-text)]">Layanan</p>
+          <p className="eyebrow font-data text-xs uppercase tracking-[0.14em] text-[var(--color-teal-text)]">{t["home.services.eyebrow"]}</p>
           <h2 className="mt-3 text-3xl font-extrabold text-[var(--color-ink)] sm:text-[2.4rem]">
-            Satu kontraktor, dari fabrikasi sampai serah terima
+            {t["home.services.title"]}
           </h2>
         </div>
         <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
@@ -237,7 +235,7 @@ export default async function HomePage() {
                 <h3 className="mt-5 text-[17px] font-bold text-[var(--color-ink)]">{s.nameId}</h3>
                 <p className="mt-2 text-[14px] leading-relaxed text-[var(--color-ink-2)]">{s.shortId}</p>
                 <span className="link-arrow mt-5 inline-flex items-center gap-1.5 text-[13.5px] font-semibold text-[var(--color-teal-text)]">
-                  Selengkapnya <ArrowRight size={14} aria-hidden="true" />
+                  {t["home.services.more"]} <ArrowRight size={14} aria-hidden="true" />
                 </span>
               </Link>
             );
@@ -251,21 +249,19 @@ export default async function HomePage() {
           <div className="grid gap-8 lg:grid-cols-[0.85fr_1.15fr] lg:items-center">
             <div>
               <p className="eyebrow font-data text-xs uppercase tracking-[0.14em] text-[var(--color-teal-text)]">
-                Jejak Proyek Nasional
+                {t["home.map.eyebrow"]}
               </p>
               <h2 className="mt-2 text-3xl font-extrabold text-[var(--color-ink)] sm:text-[2rem]">
-                Dari Kediri, mengerjakan proyek se-Indonesia
+                {t["home.map.title"]}
               </h2>
-              <p className="mt-4 text-[15px] leading-relaxed text-[var(--color-ink-2)]">
-                Dari depo rokok di Kupang hingga gudang baja di Batam, BBP telah menyelesaikan
-                pekerjaan di {cities} kota — sebagian besar untuk klien yang kembali memakai jasa
-                BBP di lokasi berikutnya.
+              <p className="mt-4 whitespace-pre-line text-[15px] leading-relaxed text-[var(--color-ink-2)]">
+                {fill(t["home.map.body"], { kota: cities })}
               </p>
               <Link
                 href="/proyek"
                 className="mt-6 link-arrow inline-flex items-center gap-2 text-[15px] font-semibold text-[var(--color-teal-text)]"
               >
-                Jelajahi semua proyek
+                {t["home.map.link"]}
                 <ArrowRight size={16} aria-hidden="true" />
               </Link>
             </div>
@@ -281,14 +277,14 @@ export default async function HomePage() {
         <div className="mb-10 flex flex-wrap items-end justify-between gap-4">
           <div className="max-w-xl">
             <p className="eyebrow font-data text-xs uppercase tracking-[0.14em] text-[var(--color-teal-text)]">
-              Proyek Unggulan
+              {t["home.featured.eyebrow"]}
             </p>
             <h2 className="mt-2 text-3xl font-extrabold text-[var(--color-ink)] sm:text-[2rem]">
-              Sebagian pekerjaan yang telah kami selesaikan
+              {t["home.featured.title"]}
             </h2>
           </div>
           <Link href="/proyek" className="text-[14.5px] font-semibold text-[var(--color-teal-text)]">
-            Semua proyek →
+            {t["home.featured.link"]}
           </Link>
         </div>
         <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
@@ -303,30 +299,28 @@ export default async function HomePage() {
         <div className="mx-auto grid max-w-6xl gap-5 px-4 sm:px-6 lg:grid-cols-2">
           <div className="card-lift rounded-xl border border-[var(--color-line)] bg-[var(--color-surface)] p-7">
             <ShieldCheck size={24} className="text-[var(--color-teal)]" aria-hidden="true" />
-            <h3 className="mt-3 text-lg font-bold text-[var(--color-ink)]">Kapasitas Alat &amp; Workshop</h3>
-            <p className="mt-2 text-[14.5px] leading-relaxed text-[var(--color-ink-2)]">
-              Rough-terrain crane 25 ton, 4 unit excavator, workshop fabrikasi baja 2.400 m² dengan
-              akses trailer 40 ft.
+            <h3 className="mt-3 text-lg font-bold text-[var(--color-ink)]">{t["home.capacity.title"]}</h3>
+            <p className="mt-2 whitespace-pre-line text-[14.5px] leading-relaxed text-[var(--color-ink-2)]">
+              {t["home.capacity.body"]}
             </p>
             <Link
               href="/kapasitas"
               className="mt-4 link-arrow inline-flex items-center gap-1.5 text-[14px] font-semibold text-[var(--color-teal-text)]"
             >
-              Lihat detail alat <ArrowRight size={14} aria-hidden="true" />
+              {t["home.capacity.link"]} <ArrowRight size={14} aria-hidden="true" />
             </Link>
           </div>
           <div className="card-lift rounded-xl border border-[var(--color-line)] bg-[var(--color-surface)] p-7">
             <Award size={24} className="text-[var(--color-teal)]" aria-hidden="true" />
-            <h3 className="mt-3 text-lg font-bold text-[var(--color-ink)]">Legalitas &amp; Sertifikasi</h3>
-            <p className="mt-2 text-[14.5px] leading-relaxed text-[var(--color-ink-2)]">
-              NIB terverifikasi, {sbuOk}/{sbuTotal} SBU M1 dalam status berlaku, ISO 9001, dan SMK3
-              dengan skor {settings.smk3.score}%.
+            <h3 className="mt-3 text-lg font-bold text-[var(--color-ink)]">{t["home.legal.title"]}</h3>
+            <p className="mt-2 whitespace-pre-line text-[14.5px] leading-relaxed text-[var(--color-ink-2)]">
+              {fill(t["home.legal.body"], { sbuBerlaku: sbuOk, sbuTotal, skorSmk3: settings.smk3.score })}
             </p>
             <Link
               href="/legalitas"
               className="mt-4 link-arrow inline-flex items-center gap-1.5 text-[14px] font-semibold text-[var(--color-teal-text)]"
             >
-              Lihat &amp; unduh dokumen <ArrowRight size={14} aria-hidden="true" />
+              {t["home.legal.link"]} <ArrowRight size={14} aria-hidden="true" />
             </Link>
           </div>
         </div>
@@ -345,7 +339,7 @@ export default async function HomePage() {
             />
           </div>
           <div>
-            <p className="eyebrow font-data text-xs uppercase tracking-[0.14em] text-[var(--color-teal-text)]">Direktur</p>
+            <p className="eyebrow font-data text-xs uppercase tracking-[0.14em] text-[var(--color-teal-text)]">{t["home.director.eyebrow"]}</p>
             <h2 className="mt-2 text-2xl font-extrabold text-[var(--color-ink)] sm:text-3xl">
               {settings.director.name}
             </h2>
@@ -357,7 +351,7 @@ export default async function HomePage() {
               href="/tentang"
               className="mt-5 link-arrow inline-flex items-center gap-1.5 text-[14.5px] font-semibold text-[var(--color-teal-text)]"
             >
-              Selengkapnya tentang BBP <ArrowRight size={15} aria-hidden="true" />
+              {t["home.director.link"]} <ArrowRight size={15} aria-hidden="true" />
             </Link>
           </div>
         </div>
@@ -373,17 +367,16 @@ export default async function HomePage() {
             <div className="absolute inset-0 bg-[linear-gradient(rgba(255,255,255,0.05)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.05)_1px,transparent_1px)] bg-[size:48px_48px] [mask-image:radial-gradient(ellipse_at_center,#000_30%,transparent_75%)]" />
           </div>
           <div className="relative">
-            <h2 className="text-3xl font-black text-[var(--color-on-panel-dark)] sm:text-5xl">Ceritakan proyek Anda</h2>
-            <p className="mx-auto mt-5 max-w-xl text-[16px] leading-relaxed text-[var(--color-on-panel-dark)]/75">
-              Struktur beton, fabrikasi baja, MEP, atau pengadaan — tim BBP membalas permintaan
-              penawaran dalam 1 hari kerja.
+            <h2 className="text-3xl font-black text-[var(--color-on-panel-dark)] sm:text-5xl">{t["home.cta.title"]}</h2>
+            <p className="mx-auto mt-5 max-w-xl whitespace-pre-line text-[16px] leading-relaxed text-[var(--color-on-panel-dark)]/75">
+              {t["home.cta.body"]}
             </p>
             <div className="mt-9 flex flex-wrap justify-center gap-3">
               <Link
                 href="/hubungi"
                 className="btn-yellow inline-flex items-center gap-2 rounded-full px-7 py-3.5 text-[15px] font-bold"
               >
-                Kirim Rencana Proyek Anda
+                {t["home.cta.button"]}
                 <ArrowRight size={17} aria-hidden="true" />
               </Link>
               <a
@@ -392,7 +385,7 @@ export default async function HomePage() {
                 rel="noopener noreferrer"
                 className="rounded-full border border-white/30 px-7 py-3.5 text-[15px] font-semibold text-white transition-all duration-300 hover:-translate-y-0.5 hover:bg-white/10"
               >
-                Chat WhatsApp
+                {t["home.cta.whatsapp"]}
               </a>
             </div>
           </div>

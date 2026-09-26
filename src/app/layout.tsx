@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { Poppins, Inter, IBM_Plex_Mono } from "next/font/google";
 import Script from "next/script";
 import "./globals.css";
-import { getSettings } from "@/lib/repo";
+import { getSettings, getTexts } from "@/lib/repo";
 
 // Runs before hydration so a returning visitor's chosen theme applies
 // before first paint — otherwise the page would flash the system-default
@@ -44,9 +44,9 @@ const plexMono = IBM_Plex_Mono({
 });
 
 export async function generateMetadata(): Promise<Metadata> {
-  const settings = await getSettings();
+  const [settings, texts] = await Promise.all([getSettings(), getTexts()]);
   const title = `${settings.companyName} — ${settings.tagline}`;
-  const description = settings.heroSubheadId;
+  const description = texts["home.hero.subtitle"];
   return {
     title: {
       default: title,

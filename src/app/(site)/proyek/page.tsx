@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Suspense } from "react";
-import { getProjects } from "@/lib/repo";
+import { getProjects, getTexts } from "@/lib/repo";
+import { fill } from "@/lib/texts";
 import { ProjectCard } from "@/components/site/project-card";
 import { ProjectFilters } from "@/components/site/project-filters";
 import { ProjectsMapClient } from "@/components/site/projects-map-loader";
@@ -13,7 +14,7 @@ export default async function ProyekPage({
   searchParams: Promise<{ kategori?: string; kota?: string; status?: string }>;
 }) {
   const params = await searchParams;
-  const allProjects = await getProjects();
+  const [allProjects, t] = await Promise.all([getProjects(), getTexts()]);
 
   const categories = (params.kategori ?? "").split(",").filter(Boolean);
   const city = params.kota ?? "";
@@ -32,9 +33,9 @@ export default async function ProyekPage({
     <>
       <section className="border-b border-[var(--color-line)] bg-[var(--color-band)]">
         <div className="mx-auto max-w-6xl px-4 py-12 sm:px-6 sm:py-16">
-          <p className="eyebrow font-data text-xs uppercase tracking-[0.14em] text-[var(--color-teal-text)]">Referensi Proyek</p>
+          <p className="eyebrow font-data text-xs uppercase tracking-[0.14em] text-[var(--color-teal-text)]">{t["projects.eyebrow"]}</p>
           <h1 className="mt-2 max-w-2xl text-[clamp(1.8rem,3.4vw,2.5rem)] font-extrabold text-[var(--color-ink)]">
-            {allProjects.length}+ pekerjaan di {cities.length} kota sejak 2012
+            {fill(t["projects.title"], { jumlahProyek: allProjects.length, kota: cities.length })}
           </h1>
         </div>
       </section>
@@ -52,8 +53,7 @@ export default async function ProyekPage({
 
       <section className="mx-auto max-w-6xl px-4 pb-20 sm:px-6">
         <p className="mb-5 text-[14px] text-[var(--color-ink-2)]">
-          Menampilkan <span className="font-semibold text-[var(--color-ink)]">{filtered.length}</span>{" "}
-          proyek
+          {fill(t["projects.count"], { jumlah: filtered.length })}
         </p>
         {filtered.length ? (
           <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
@@ -63,7 +63,7 @@ export default async function ProyekPage({
           </div>
         ) : (
           <div className="rounded-md border border-dashed border-[var(--color-line-2)] p-12 text-center text-[15px] text-[var(--color-ink-2)]">
-            Tidak ada proyek yang cocok dengan filter ini. Coba ubah kategori atau kota.
+            {t["projects.empty"]}
           </div>
         )}
       </section>

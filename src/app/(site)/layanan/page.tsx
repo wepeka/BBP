@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { ArrowRight, Building2, Factory, Layers, Zap, Map as MapIcon, Package } from "lucide-react";
-import { getServices } from "@/lib/repo";
+import { getServices, getTexts } from "@/lib/repo";
 
 export const metadata: Metadata = { title: "Layanan" };
 
@@ -15,19 +15,18 @@ const ICONS: Record<string, React.ComponentType<{ size?: number; className?: str
 };
 
 export default async function LayananPage() {
-  const services = await getServices();
+  const [services, t] = await Promise.all([getServices(), getTexts()]);
 
   return (
     <>
       <section className="border-b border-[var(--color-line)] bg-[var(--color-band)]">
         <div className="mx-auto max-w-6xl px-4 py-14 sm:px-6 sm:py-20">
-          <p className="eyebrow font-data text-xs uppercase tracking-[0.14em] text-[var(--color-teal-text)]">Layanan</p>
+          <p className="eyebrow font-data text-xs uppercase tracking-[0.14em] text-[var(--color-teal-text)]">{t["services.eyebrow"]}</p>
           <h1 className="mt-2 max-w-2xl text-[clamp(1.9rem,3.6vw,2.75rem)] font-extrabold text-[var(--color-ink)]">
-            Enam lini kerja, satu penanggung jawab
+            {t["services.title"]}
           </h1>
-          <p className="mt-4 max-w-2xl text-[16px] leading-relaxed text-[var(--color-ink-2)]">
-            BBP mengerjakan proyek dari fabrikasi hingga serah terima tanpa berpindah kontraktor —
-            struktur, baja, atap, MEP, sipil, sampai pengadaan barang.
+          <p className="mt-4 max-w-2xl whitespace-pre-line text-[16px] leading-relaxed text-[var(--color-ink-2)]">
+            {t["services.intro"]}
           </p>
         </div>
       </section>
@@ -53,7 +52,7 @@ export default async function LayananPage() {
                 <div>
                   <h2 className="text-xl font-bold text-[var(--color-ink)] sm:text-2xl">{s.nameId}</h2>
                   <p className="mt-1 text-[13.5px] italic text-[var(--color-ink-3)]">{s.nameEn}</p>
-                  <p className="mt-4 max-w-2xl text-[15px] leading-relaxed text-[var(--color-ink-2)]">
+                  <p className="mt-4 max-w-2xl whitespace-pre-line text-[15px] leading-relaxed text-[var(--color-ink-2)]">
                     {s.descriptionId}
                   </p>
                 </div>
@@ -66,13 +65,13 @@ export default async function LayananPage() {
       <section className="border-t border-[var(--color-line)] bg-[var(--color-surface-2)] py-14">
         <div className="mx-auto flex max-w-6xl flex-col items-start justify-between gap-5 px-4 sm:flex-row sm:items-center sm:px-6">
           <p className="text-[16px] font-semibold text-[var(--color-ink)]">
-            Butuh salah satu layanan di atas, atau kombinasinya?
+            {t["services.cta.text"]}
           </p>
           <Link
             href="/hubungi"
             className="btn-primary inline-flex items-center gap-2 rounded-full px-6 py-3 text-[15px] font-semibold"
           >
-            Kirim Rencana Proyek Anda <ArrowRight size={16} aria-hidden="true" />
+            {t["services.cta.button"]} <ArrowRight size={16} aria-hidden="true" />
           </Link>
         </div>
       </section>

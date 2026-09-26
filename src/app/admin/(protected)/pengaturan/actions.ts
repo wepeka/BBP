@@ -12,8 +12,6 @@ export async function updateSettingsAction(formData: FormData) {
     companyName: String(formData.get("companyName") ?? "").trim(),
     tagline: String(formData.get("tagline") ?? "").trim(),
     taglineLong: String(formData.get("taglineLong") ?? "").trim(),
-    heroHeadlineId: String(formData.get("heroHeadlineId") ?? "").trim(),
-    heroSubheadId: String(formData.get("heroSubheadId") ?? "").trim(),
     address: String(formData.get("address") ?? "").trim(),
     phone: String(formData.get("phone") ?? "").trim(),
     fax: String(formData.get("fax") ?? "").trim(),

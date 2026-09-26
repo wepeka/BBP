@@ -1,12 +1,12 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { ArrowRight } from "lucide-react";
-import { getClients, getProjects } from "@/lib/repo";
+import { getClients, getProjects, getTexts } from "@/lib/repo";
 
 export const metadata: Metadata = { title: "Klien Kami" };
 
 export default async function KlienPage() {
-  const [clients, projects] = await Promise.all([getClients(), getProjects()]);
+  const [clients, projects, t] = await Promise.all([getClients(), getProjects(), getTexts()]);
   const flagship = clients.filter((c) => c.flagship);
   const others = clients.filter((c) => !c.flagship);
 
@@ -14,13 +14,12 @@ export default async function KlienPage() {
     <>
       <section className="border-b border-[var(--color-line)] bg-[var(--color-band)]">
         <div className="mx-auto max-w-6xl px-4 py-14 sm:px-6 sm:py-20">
-          <p className="eyebrow font-data text-xs uppercase tracking-[0.14em] text-[var(--color-teal-text)]">Klien Kami</p>
+          <p className="eyebrow font-data text-xs uppercase tracking-[0.14em] text-[var(--color-teal-text)]">{t["clients.eyebrow"]}</p>
           <h1 className="mt-2 max-w-2xl text-[clamp(1.9rem,3.6vw,2.75rem)] font-extrabold text-[var(--color-ink)]">
-            Klien yang kembali memakai jasa BBP
+            {t["clients.title"]}
           </h1>
-          <p className="mt-4 max-w-2xl text-[16px] leading-relaxed text-[var(--color-ink-2)]">
-            Klien korporat besar jarang mengulang kontraktor yang mengecewakan. Sebagian besar
-            klien BBP kembali untuk proyek berikutnya, di kota yang berbeda.
+          <p className="mt-4 max-w-2xl whitespace-pre-line text-[16px] leading-relaxed text-[var(--color-ink-2)]">
+            {t["clients.intro"]}
           </p>
         </div>
       </section>
@@ -71,7 +70,7 @@ export default async function KlienPage() {
       <section className="border-t border-[var(--color-line)] bg-[var(--color-surface-2)] py-14 sm:py-16">
         <div className="mx-auto max-w-6xl px-4 sm:px-6">
           <h2 className="font-data text-xs font-medium uppercase tracking-[0.12em] text-[var(--color-ink-3)]">
-            Klien Lainnya
+            {t["clients.others"]}
           </h2>
           <div className="mt-5 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
             {others.map((c) => (

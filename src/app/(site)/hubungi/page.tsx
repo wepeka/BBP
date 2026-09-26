@@ -1,19 +1,19 @@
 import type { Metadata } from "next";
 import { MapPin, Phone, Printer, Mail, Clock, MessageCircle } from "lucide-react";
-import { getServices, getSettings } from "@/lib/repo";
+import { getServices, getSettings, getTexts } from "@/lib/repo";
 import { RfqForm } from "@/components/site/rfq-form";
 import { LocationMapClient } from "@/components/site/location-map-loader";
 
 export const metadata: Metadata = { title: "Hubungi Kami" };
 
 export default async function HubungiPage() {
-  const [services, settings] = await Promise.all([getServices(), getSettings()]);
+  const [services, settings, t] = await Promise.all([getServices(), getSettings(), getTexts()]);
 
   return (
     <section className="mx-auto max-w-6xl px-4 py-14 sm:px-6 sm:py-20">
-      <p className="font-data text-xs uppercase tracking-[0.14em] text-[var(--color-teal-text)]">Hubungi Kami</p>
+      <p className="eyebrow font-data text-xs uppercase tracking-[0.14em] text-[var(--color-teal-text)]">{t["contact.eyebrow"]}</p>
       <h1 className="mt-2 max-w-2xl text-[clamp(1.9rem,3.6vw,2.75rem)] font-extrabold text-[var(--color-ink)]">
-        Minta penawaran untuk proyek Anda
+        {t["contact.title"]}
       </h1>
 
       <div className="mt-10 grid gap-8 lg:grid-cols-[1.2fr_1fr]">
@@ -23,7 +23,7 @@ export default async function HubungiPage() {
 
         <div className="space-y-5">
           <div className="rounded-md border border-[var(--color-line)] bg-[var(--color-surface)] p-6">
-            <h2 className="text-lg font-bold text-[var(--color-ink)]">Kantor Kediri</h2>
+            <h2 className="text-lg font-bold text-[var(--color-ink)]">{t["contact.office"]}</h2>
             <dl className="mt-4 space-y-3 text-[14.5px] text-[var(--color-ink-2)]">
               <div className="flex gap-2.5">
                 <MapPin size={17} className="mt-0.5 shrink-0 text-[var(--color-teal)]" aria-hidden="true" />
@@ -62,12 +62,12 @@ export default async function HubungiPage() {
               className="mt-5 flex items-center justify-center gap-2 rounded-md bg-[#25D366] py-3 text-[14.5px] font-semibold text-white"
             >
               <MessageCircle size={17} aria-hidden="true" />
-              Chat via WhatsApp
+              {t["contact.whatsapp"]}
             </a>
           </div>
 
           <div className="rounded-md bg-[var(--color-surface-2)] p-6 text-[13.5px] leading-relaxed text-[var(--color-ink-2)]">
-            Untuk vendor registration atau permintaan dokumen legal, lihat halaman{" "}
+            {t["contact.legalNote"]}{" "}
             <a href="/legalitas" className="font-medium text-[var(--color-teal-text)]">
               Legalitas &amp; Sertifikasi
             </a>

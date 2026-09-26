@@ -1,45 +1,40 @@
 import type { Metadata } from "next";
 import Image from "next/image";
 import { Truck, Wrench, Warehouse, Gauge } from "lucide-react";
-import { getEquipment } from "@/lib/repo";
+import { getEquipment, getTexts } from "@/lib/repo";
+import { parseList } from "@/lib/texts";
 
 export const metadata: Metadata = { title: "Kapasitas & Alat" };
 
-const WORKSHOP = [
-  { label: "Luas area fabrikasi", value: "2.400 m²" },
-  { label: "Akses kendaraan maksimum", value: "Trailer 40 ft" },
-  { label: "Penanganan material", value: "3 unit forklift (1×3,5 t + 2×2,5 t)" },
-  { label: "Daya listrik", value: "33 kVA" },
-];
 
 export default async function KapasitasPage() {
-  const equipment = await getEquipment();
+  const [equipment, t] = await Promise.all([getEquipment(), getTexts()]);
+  const workshop = parseList(t["capacity.workshop"]);
   const categories = Array.from(new Set(equipment.map((e) => e.category)));
 
   return (
     <>
       <section className="border-b border-[var(--color-line)] bg-[var(--color-band)]">
         <div className="mx-auto max-w-6xl px-4 py-14 sm:px-6 sm:py-20">
-          <p className="eyebrow font-data text-xs uppercase tracking-[0.14em] text-[var(--color-teal-text)]">Kapasitas &amp; Alat</p>
+          <p className="eyebrow font-data text-xs uppercase tracking-[0.14em] text-[var(--color-teal-text)]">{t["capacity.eyebrow"]}</p>
           <h1 className="mt-2 max-w-2xl text-[clamp(1.9rem,3.6vw,2.75rem)] font-extrabold text-[var(--color-ink)]">
-            Alat berat &amp; workshop milik sendiri
+            {t["capacity.title"]}
           </h1>
-          <p className="mt-4 max-w-2xl text-[16px] leading-relaxed text-[var(--color-ink-2)]">
-            BBP mengoperasikan armada dan workshop fabrikasi sendiri, bukan menyewa — mempercepat
-            jadwal dan menjaga mutu fabrikasi baja tetap terkontrol.
+          <p className="mt-4 max-w-2xl whitespace-pre-line text-[16px] leading-relaxed text-[var(--color-ink-2)]">
+            {t["capacity.intro"]}
           </p>
         </div>
       </section>
 
       <section className="mx-auto max-w-6xl px-4 py-14 sm:px-6 sm:py-16">
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-          {WORKSHOP.map((w) => (
-            <div key={w.label} className="card-lift rounded-xl border border-[var(--color-line)] bg-[var(--color-surface)] p-5">
+          {workshop.map(([value, label], i) => (
+            <div key={i} className="card-lift rounded-xl border border-[var(--color-line)] bg-[var(--color-surface)] p-5">
               <Warehouse size={20} className="text-[var(--color-teal)]" aria-hidden="true" />
               <p className="mt-3 font-[family-name:var(--font-display)] text-xl font-extrabold tabular-nums text-[var(--color-ink)]">
-                {w.value}
+                {value}
               </p>
-              <p className="mt-1 text-[13px] text-[var(--color-ink-2)]">{w.label}</p>
+              <p className="mt-1 text-[13px] text-[var(--color-ink-2)]">{label ?? ""}</p>
             </div>
           ))}
         </div>
@@ -57,7 +52,7 @@ export default async function KapasitasPage() {
         <div className="mx-auto max-w-6xl px-4 sm:px-6">
           <div className="mb-8 flex items-center gap-3">
             <Truck size={22} className="text-[var(--color-teal)]" aria-hidden="true" />
-            <h2 className="text-2xl font-extrabold text-[var(--color-ink)]">Daftar Peralatan</h2>
+            <h2 className="text-2xl font-extrabold text-[var(--color-ink)]">{t["capacity.equipment.title"]}</h2>
           </div>
           <div className="space-y-8">
             {categories.map((cat) => (
@@ -91,10 +86,8 @@ export default async function KapasitasPage() {
       <section className="mx-auto max-w-6xl px-4 py-14 sm:px-6">
         <div className="flex items-start gap-4 card-lift rounded-xl border border-[var(--color-line)] bg-[var(--color-surface)] p-6">
           <Gauge size={22} className="mt-0.5 shrink-0 text-[var(--color-teal)]" aria-hidden="true" />
-          <p className="text-[14.5px] leading-relaxed text-[var(--color-ink-2)]">
-            Kapasitas angkat terbesar BBP adalah rough-terrain crane <b className="text-[var(--color-ink)]">25 ton</b>,
-            didukung knuckle boom crane 3 ton untuk pekerjaan yang lebih ringkas. Kombinasi ini
-            digunakan pada erection struktur baja bentang lebar seperti gudang dan depo.
+          <p className="whitespace-pre-line text-[14.5px] leading-relaxed text-[var(--color-ink-2)]">
+            {t["capacity.note"]}
           </p>
         </div>
       </section>
