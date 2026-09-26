@@ -36,7 +36,7 @@ export const TEXT_PAGES = [
 export const TEXT_FIELDS = [
   /* ---------------- Beranda ---------------- */
   { key: "home.hero.badge", page: "beranda", section: "Hero (bagian paling atas)", label: "Label kecil di atas judul", default: "General Contractor & Supplier · Kediri" },
-  { key: "home.hero.title", page: "beranda", section: "Hero (bagian paling atas)", label: "Judul besar", default: "Dibangun di 17 kota. Dipercaya lagi selama 13 tahun.", multiline: true },
+  { key: "home.hero.title", page: "beranda", section: "Hero (bagian paling atas)", label: "Judul besar", default: "Kontraktor andalan industri. Terbukti di 17 kota sejak 2012.", multiline: true },
   { key: "home.hero.subtitle", page: "beranda", section: "Hero (bagian paling atas)", label: "Paragraf di bawah judul", default: "General contractor & supplier asal Kediri untuk struktur beton, fabrikasi baja, atap, MEP, sipil, dan pengadaan — dipercaya PT Gudang Garam Tbk sejak 2012.", multiline: true },
   { key: "home.hero.ctaPrimary", page: "beranda", section: "Hero (bagian paling atas)", label: "Tombol utama", default: "Kirim Rencana Proyek Anda" },
   { key: "home.hero.ctaSecondary", page: "beranda", section: "Hero (bagian paling atas)", label: "Tombol kedua", default: "Lihat Proyek Kami" },

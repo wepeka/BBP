@@ -36,7 +36,7 @@ export default async function HomePage() {
     getTexts(),
   ]);
 
-  // Split "Dibangun di 17 kota. Dipercaya lagi selama 13 tahun." so the
+  // Split e.g. "Kontraktor andalan industri. Terbukti di 17 kota sejak 2012." so the
   // second sentence gets the highlighter sweep.
   const dot = t["home.hero.title"].indexOf(". ");
   const headlineA = dot === -1 ? t["home.hero.title"] : t["home.hero.title"].slice(0, dot + 1);
