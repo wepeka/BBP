@@ -1,16 +1,16 @@
-import { PageHeader, Card } from "@/components/admin/field";
-import { ProjectForm } from "@/components/admin/project-form";
-import { createProjectAction } from "@/app/admin/(protected)/proyek/actions";
+import { getAllClients, getAllProjects, getCategories } from "@/lib/repo";
+import { ProjectEditor } from "@/components/admin/project-editor";
 
-export const metadata = { title: "Proyek Baru — Admin" };
+export const metadata = { title: "Proyek Baru" };
 
-export default function AdminProyekBaruPage() {
+export default async function AdminProyekBaruPage() {
+  const [categories, clients, projects] = await Promise.all([getCategories(), getAllClients(), getAllProjects()]);
   return (
-    <div>
-      <PageHeader title="Proyek Baru" description="Isi detail proyek, lalu terbitkan." />
-      <Card className="max-w-3xl">
-        <ProjectForm action={createProjectAction} />
-      </Card>
-    </div>
+    <ProjectEditor
+      categories={categories}
+      clients={clients}
+      cities={Array.from(new Set(projects.map((p) => p.city))).sort()}
+      provinces={Array.from(new Set(projects.map((p) => p.province))).sort()}
+    />
   );
 }

@@ -1,47 +1,71 @@
 "use server";
 
-import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
-import { getSession } from "@/lib/auth";
-import { createClient, updateClient, deleteClient } from "@/lib/repo";
+import { requireEditor } from "@/lib/auth";
+import { createClient, deleteClient, reorderClients, updateClient } from "@/lib/repo";
+import type { Client } from "@/lib/types";
 
-async function requireSession() {
-  const session = await getSession();
-  if (!session) throw new Error("Unauthorized");
+export type ClientResult = { ok: true; client: Client } | { ok: false; error: string };
+export type SimpleResult = { ok: true } | { ok: false; error: string };
+
+export interface ClientFormData {
+  name: string;
+  note: string;
+  city: string;
+  province: string;
+  since: string;
+  projectCount: string;
+  flagship: boolean;
+  logo: string | null;
+  website: string;
+  hidden: boolean;
 }
 
-function readForm(formData: FormData) {
-  return {
-    name: String(formData.get("name") ?? "").trim(),
-    note: String(formData.get("note") ?? "").trim() || null,
-    city: String(formData.get("city") ?? "").trim(),
-    province: String(formData.get("province") ?? "").trim(),
-    since: formData.get("since") ? Number(formData.get("since")) : undefined,
-    projectCount: formData.get("projectCount") ? Number(formData.get("projectCount")) : undefined,
-    flagship: formData.get("flagship") === "on",
-  };
+const t = (v: unknown) => String(v ?? "").trim();
+
+export async function saveClientAction(id: string | null, d: ClientFormData): Promise<ClientResult> {
+  try {
+    await requireEditor();
+    if (!t(d.name)) return { ok: false, error: "Isi nama klien." };
+    const data: Omit<Client, "id"> = {
+      name: t(d.name),
+      note: t(d.note) || null,
+      city: t(d.city),
+      province: t(d.province),
+      since: Number(d.since) || undefined,
+      projectCount: Number(d.projectCount) || undefined,
+      flagship: Boolean(d.flagship),
+      logo: d.logo || null,
+      website: t(d.website) || null,
+      hidden: Boolean(d.hidden),
+    };
+    const client = id ? await updateClient(id, data) : await createClient(data);
+    if (!client) return { ok: false, error: "Klien tidak ditemukan." };
+    revalidatePath("/", "layout");
+    return { ok: true, client };
+  } catch (e) {
+    return { ok: false, error: (e as Error).message };
+  }
 }
 
-export async function createClientAction(formData: FormData) {
-  await requireSession();
-  await createClient(readForm(formData));
-  revalidatePath("/klien");
-  revalidatePath("/admin/klien");
-  redirect("/admin/klien");
+export async function deleteClientAction(id: string): Promise<SimpleResult> {
+  try {
+    await requireEditor();
+    await deleteClient(id);
+    revalidatePath("/", "layout");
+    return { ok: true };
+  } catch (e) {
+    return { ok: false, error: (e as Error).message };
+  }
 }
 
-export async function updateClientAction(id: string, formData: FormData) {
-  await requireSession();
-  await updateClient(id, readForm(formData));
-  revalidatePath("/klien");
-  revalidatePath("/admin/klien");
-  redirect("/admin/klien");
-}
-
-export async function deleteClientAction(id: string) {
-  await requireSession();
-  await deleteClient(id);
-  revalidatePath("/klien");
-  revalidatePath("/admin/klien");
-  redirect("/admin/klien");
+export async function reorderClientsAction(ids: string[]): Promise<SimpleResult> {
+  try {
+    await requireEditor();
+    await reorderClients(ids);
+    revalidatePath("/", "layout");
+    return { ok: true };
+  } catch (e) {
+    return { ok: false, error: (e as Error).message };
+  }
 }

@@ -1,133 +1,159 @@
 "use server";
 
-import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
-import { getSession } from "@/lib/auth";
-import { saveUpload } from "@/lib/store";
+import { requireEditor } from "@/lib/auth";
 import {
   createProject,
-  updateProject,
   deleteProject,
   getProjectById,
+  reorderProjects,
+  updateProject,
+  type ProjectInput,
 } from "@/lib/repo";
-import type { ProjectStatus } from "@/lib/types";
+import type { Project, ProjectStatus } from "@/lib/types";
 
-async function requireSession() {
-  const session = await getSession();
-  if (!session) throw new Error("Unauthorized");
-  return session;
+export type ProjectResult = { ok: true; id: string; slug: string } | { ok: false; error: string };
+export type SimpleResult = { ok: true } | { ok: false; error: string };
+
+export interface ProjectFormData {
+  titleId: string;
+  titleEn: string;
+  slug: string;
+  client: string;
+  clientNote: string;
+  city: string;
+  province: string;
+  year: string;
+  status: ProjectStatus;
+  categories: string[];
+  lat: number;
+  lng: number;
+  scope: string;
+  descriptionId: string;
+  images: string[];
+  featured: boolean;
+  hidden: boolean;
+  area: string;
+  duration: string;
 }
 
-async function saveUploads(files: File[], slug: string): Promise<string[]> {
-  const valid = files.filter((f) => f && f.size > 0);
-  if (!valid.length) return [];
+const t = (v: unknown) => String(v ?? "").replace(/\r\n/g, "\n").trim();
 
-  const saved: string[] = [];
-  for (const file of valid) {
-    const ext = (file.name.split(".").pop() || "jpg").toLowerCase().replace(/[^a-z0-9]/g, "");
-    const filename = `${Date.now()}-${Math.random().toString(36).slice(2, 7)}.${ext || "jpg"}`;
-    const buffer = Buffer.from(await file.arrayBuffer());
-    saved.push(await saveUpload(`images/uploads/${slug}/${filename}`, buffer, file.type || "image/jpeg"));
-  }
-  return saved;
+function refresh(slug?: string) {
+  revalidatePath("/", "layout");
+  if (slug) revalidatePath(`/proyek/${slug}`);
 }
 
-function readForm(formData: FormData) {
-  const categories = formData.getAll("categories").map(String).filter(Boolean);
-  const keepImages = formData.getAll("keepImages").map(String);
-  const newFiles = formData.getAll("newImages").filter((v): v is File => v instanceof File);
+function validate(d: ProjectFormData): string | null {
+  if (!t(d.titleId)) return "Isi judul proyek.";
+  if (!t(d.city)) return "Isi kota lokasi proyek.";
+  if (!t(d.province)) return "Isi provinsi lokasi proyek.";
+  if (!t(d.year)) return "Isi tahun atau periode pengerjaan.";
+  return null;
+}
 
+function toInput(d: ProjectFormData): ProjectInput {
   return {
-    titleId: String(formData.get("titleId") ?? "").trim(),
-    titleEn: String(formData.get("titleEn") ?? "").trim() || String(formData.get("titleId") ?? "").trim(),
-    client: String(formData.get("client") ?? "").trim() || null,
-    clientNote: String(formData.get("clientNote") ?? "").trim() || null,
-    city: String(formData.get("city") ?? "").trim(),
-    province: String(formData.get("province") ?? "").trim(),
-    year: String(formData.get("year") ?? "").trim(),
-    status: (String(formData.get("status") ?? "selesai") as ProjectStatus),
-    categories,
-    lat: Number(formData.get("lat") ?? 0) || 0,
-    lng: Number(formData.get("lng") ?? 0) || 0,
-    scope: String(formData.get("scope") ?? "").trim(),
-    descriptionId: String(formData.get("descriptionId") ?? "").trim(),
-    featured: formData.get("featured") === "on",
-    keepImages,
-    newFiles,
-    slug: String(formData.get("slug") ?? "").trim(),
+    titleId: t(d.titleId),
+    titleEn: t(d.titleEn) || t(d.titleId),
+    client: t(d.client) || null,
+    clientNote: t(d.clientNote) || null,
+    city: t(d.city),
+    province: t(d.province),
+    year: t(d.year),
+    status: d.status === "berjalan" ? "berjalan" : "selesai",
+    categories: Array.from(new Set(d.categories.filter(Boolean))),
+    lat: Number(d.lat) || 0,
+    lng: Number(d.lng) || 0,
+    scope: t(d.scope),
+    descriptionId: t(d.descriptionId),
+    images: d.images.filter(Boolean),
+    featured: Boolean(d.featured),
+    hidden: Boolean(d.hidden),
+    area: t(d.area) || null,
+    duration: t(d.duration) || null,
+    slug: t(d.slug),
   };
 }
 
-export async function createProjectAction(formData: FormData) {
-  await requireSession();
-  const data = readForm(formData);
-
-  const project = await createProject({
-    titleId: data.titleId,
-    titleEn: data.titleEn,
-    client: data.client,
-    clientNote: data.clientNote,
-    city: data.city,
-    province: data.province,
-    year: data.year,
-    status: data.status,
-    categories: data.categories,
-    lat: data.lat,
-    lng: data.lng,
-    scope: data.scope,
-    descriptionId: data.descriptionId,
-    images: [],
-    featured: data.featured,
-    slug: data.slug,
-  });
-
-  const uploaded = await saveUploads(data.newFiles, project.slug);
-  if (uploaded.length) {
-    await updateProject(project.id, { images: uploaded });
+export async function saveProjectAction(id: string | null, data: ProjectFormData): Promise<ProjectResult> {
+  try {
+    await requireEditor();
+    const error = validate(data);
+    if (error) return { ok: false, error };
+    const input = toInput(data);
+    if (!id) {
+      const created = await createProject(input);
+      refresh(created.slug);
+      return { ok: true, id: created.id, slug: created.slug };
+    }
+    const before = await getProjectById(id);
+    if (!before) return { ok: false, error: "Proyek tidak ditemukan. Mungkin sudah dihapus." };
+    const { slug, ...rest } = input;
+    const updated = await updateProject(id, slug && slug !== before.slug ? { ...rest, slug } : rest);
+    if (!updated) return { ok: false, error: "Proyek tidak ditemukan." };
+    refresh(before.slug);
+    refresh(updated.slug);
+    return { ok: true, id: updated.id, slug: updated.slug };
+  } catch (e) {
+    return { ok: false, error: (e as Error).message || "Gagal menyimpan proyek." };
   }
-
-  revalidatePath("/proyek");
-  revalidatePath("/admin/proyek");
-  redirect(`/admin/proyek/${project.id}`);
 }
 
-export async function updateProjectAction(id: string, formData: FormData) {
-  await requireSession();
-  const existing = await getProjectById(id);
-  if (!existing) throw new Error("Proyek tidak ditemukan");
-
-  const data = readForm(formData);
-  const uploaded = await saveUploads(data.newFiles, existing.slug);
-  const images = [...data.keepImages, ...uploaded];
-
-  await updateProject(id, {
-    titleId: data.titleId,
-    titleEn: data.titleEn,
-    client: data.client,
-    clientNote: data.clientNote,
-    city: data.city,
-    province: data.province,
-    year: data.year,
-    status: data.status,
-    categories: data.categories,
-    lat: data.lat,
-    lng: data.lng,
-    scope: data.scope,
-    descriptionId: data.descriptionId,
-    featured: data.featured,
-    images,
-  });
-
-  revalidatePath("/proyek");
-  revalidatePath(`/proyek/${existing.slug}`);
-  revalidatePath("/admin/proyek");
-  redirect(`/admin/proyek/${id}`);
+export async function deleteProjectAction(id: string): Promise<SimpleResult> {
+  try {
+    await requireEditor();
+    const before = await getProjectById(id);
+    await deleteProject(id);
+    refresh(before?.slug);
+    return { ok: true };
+  } catch (e) {
+    return { ok: false, error: (e as Error).message };
+  }
 }
 
-export async function deleteProjectAction(id: string) {
-  await requireSession();
-  await deleteProject(id);
-  revalidatePath("/proyek");
-  revalidatePath("/admin/proyek");
-  redirect("/admin/proyek");
+export async function duplicateProjectAction(id: string): Promise<ProjectResult> {
+  try {
+    await requireEditor();
+    const p = await getProjectById(id);
+    if (!p) return { ok: false, error: "Proyek tidak ditemukan." };
+    const { id: _id, slug: _slug, order: _order, ...rest } = p;
+    void _id;
+    void _slug;
+    void _order;
+    const copy = await createProject({ ...rest, titleId: `${p.titleId} (salinan)`, hidden: true, featured: false });
+    refresh();
+    return { ok: true, id: copy.id, slug: copy.slug };
+  } catch (e) {
+    return { ok: false, error: (e as Error).message };
+  }
+}
+
+export async function reorderProjectsAction(ids: string[]): Promise<SimpleResult> {
+  try {
+    await requireEditor();
+    await reorderProjects(ids);
+    refresh();
+    return { ok: true };
+  } catch (e) {
+    return { ok: false, error: (e as Error).message };
+  }
+}
+
+export async function setProjectFlagsAction(
+  id: string,
+  patch: Partial<Pick<Project, "featured" | "hidden" | "status">>
+): Promise<SimpleResult> {
+  try {
+    await requireEditor();
+    const clean: Partial<Pick<Project, "featured" | "hidden" | "status">> = {};
+    if (typeof patch.featured === "boolean") clean.featured = patch.featured;
+    if (typeof patch.hidden === "boolean") clean.hidden = patch.hidden;
+    if (patch.status === "selesai" || patch.status === "berjalan") clean.status = patch.status;
+    const p = await updateProject(id, clean);
+    refresh(p?.slug);
+    return { ok: true };
+  } catch (e) {
+    return { ok: false, error: (e as Error).message };
+  }
 }

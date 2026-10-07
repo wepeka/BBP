@@ -17,18 +17,18 @@ function pin() {
   });
 }
 
-export function LocationMap({ lat, lng }: { lat: number; lng: number }) {
+export function LocationMap({ lat, lng, zoom = 11 }: { lat: number; lng: number; zoom?: number }) {
   return (
     <MapContainer
       center={[lat, lng]}
-      zoom={11}
+      zoom={zoom}
       scrollWheelZoom={false}
       dragging={false}
-      style={{ height: "100%", width: "100%", borderRadius: "8px" }}
+      style={{ height: "100%", width: "100%", borderRadius: "6px" }}
     >
       <TileLayer
         url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-        attribution='&copy; OpenStreetMap contributors'
+        attribution="&copy; OpenStreetMap contributors"
         subdomains="abc"
         maxZoom={19}
       />

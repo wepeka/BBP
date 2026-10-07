@@ -9,7 +9,8 @@ export function CountUp({ value, suffix = "", duration = 1600 }: { value: number
 
   useEffect(() => {
     const el = ref.current;
-    if (!el || window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+    // Skip the animation for reduced motion and inside the admin preview frame.
+    if (!el || window.matchMedia("(prefers-reduced-motion: reduce)").matches || window.self !== window.top) return;
     // Start from zero only on the client, so server HTML still shows the real number.
     setN(0);
     let raf = 0;

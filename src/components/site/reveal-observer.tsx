@@ -17,7 +17,8 @@ export function RevealObserver() {
   const pathname = usePathname();
 
   useEffect(() => {
-    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+    // No reveal animation for reduced motion or inside the admin preview frame.
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches || window.self !== window.top) return;
 
     const els = Array.from(document.querySelectorAll<HTMLElement>(SELECTOR)).filter(
       (el) => !el.closest("[data-no-reveal]") && !el.classList.contains("is-visible")

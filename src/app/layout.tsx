@@ -1,8 +1,9 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Poppins, Inter, IBM_Plex_Mono } from "next/font/google";
 import Script from "next/script";
 import "./globals.css";
 import { getSettings, getTexts } from "@/lib/repo";
+import { SITE_URL } from "@/lib/site";
 
 // Runs before hydration so a returning visitor's chosen theme applies
 // before first paint — otherwise the page would flash the system-default
@@ -19,8 +20,8 @@ const THEME_INIT_SCRIPT = `
 `;
 
 // Display face: BBP's brand guidelines specify Nexa Heavy, a commercial
-// font with no free web-embed license. Poppins (Bold/ExtraBold/Black) is
-// the closest freely-licensable geometric-sans match for headlines.
+// font with no free web-embed license. Poppins (Bold/ExtraBold/Black) is the
+// closest freely-licensable geometric-sans match for headlines.
 const poppins = Poppins({
   subsets: ["latin"],
   weight: ["600", "700", "800", "900"],
@@ -31,7 +32,6 @@ const poppins = Poppins({
 // Body face: Inter is BBP's own specified typeface — used directly.
 const inter = Inter({
   subsets: ["latin"],
-  weight: ["400", "500", "600", "700"],
   variable: "--font-inter",
   display: "swap",
 });
@@ -43,24 +43,30 @@ const plexMono = IBM_Plex_Mono({
   display: "swap",
 });
 
+export const viewport: Viewport = {
+  themeColor: [
+    { media: "(prefers-color-scheme: light)", color: "#f6f4f2" },
+    { media: "(prefers-color-scheme: dark)", color: "#0c1812" },
+  ],
+};
+
 export async function generateMetadata(): Promise<Metadata> {
-  const [settings, texts] = await Promise.all([getSettings(), getTexts()]);
-  const title = `${settings.companyName} — ${settings.tagline}`;
-  const description = texts["home.hero.subtitle"];
+  const [settings, t] = await Promise.all([getSettings(), getTexts()]);
+  const title = t["seo.beranda.title"] || `${settings.companyName} — ${settings.tagline}`;
+  const description = t["seo.beranda.description"];
   return {
-    title: {
-      default: title,
-      template: `%s — ${settings.shortName}`,
-    },
+    metadataBase: new URL(SITE_URL),
+    title: { default: title, template: `%s — ${settings.shortName}` },
     description,
+    applicationName: settings.companyName,
     keywords: [
       "kontraktor kediri",
       "general contractor jawa timur",
       "kontraktor baja",
       "kontraktor gudang",
+      "fabrikasi baja kediri",
       "PT Bina Bangun Perkasa",
     ],
-    metadataBase: new URL("https://binabangunperkasa.co.id"),
     openGraph: {
       title,
       description,
@@ -68,20 +74,14 @@ export async function generateMetadata(): Promise<Metadata> {
       type: "website",
       siteName: settings.companyName,
     },
+    twitter: { card: "summary_large_image" },
+    formatDetection: { telephone: false },
   };
 }
 
-export default function RootLayout({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
+export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html
-      lang="id"
-      className={`${poppins.variable} ${inter.variable} ${plexMono.variable}`}
-      suppressHydrationWarning
-    >
+    <html lang="id" className={`${poppins.variable} ${inter.variable} ${plexMono.variable}`} suppressHydrationWarning>
       <body className="flex min-h-screen flex-col bg-[var(--color-bg)] text-[var(--color-ink)]">
         <Script id="theme-init" strategy="beforeInteractive">
           {THEME_INIT_SCRIPT}

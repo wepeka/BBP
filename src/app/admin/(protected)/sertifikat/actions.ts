@@ -1,36 +1,71 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
-import { getSession } from "@/lib/auth";
-import { saveUpload } from "@/lib/store";
-import { updateCertificate, getCertificates } from "@/lib/repo";
-import type { CertificateStatus } from "@/lib/types";
+import { requireEditor } from "@/lib/auth";
+import { deleteCertificate, reorderCertificates, saveCertificate } from "@/lib/repo";
+import type { Certificate, CertificateGroup, CertificateStatus } from "@/lib/types";
 
-export async function updateCertificateAction(id: string, formData: FormData) {
-  const session = await getSession();
-  if (!session) throw new Error("Unauthorized");
+export type SimpleResult = { ok: true } | { ok: false; error: string };
 
-  const status = String(formData.get("status") ?? "berlaku") as CertificateStatus;
-  const note = String(formData.get("note") ?? "").trim() || null;
-  const file = formData.get("file");
+export interface CertificateFormData {
+  group: CertificateGroup;
+  name: string;
+  number: string;
+  issuer: string;
+  qualification: string;
+  status: CertificateStatus;
+  expiresAt: string;
+  note: string;
+  fileUrl: string | null;
+  hidden: boolean;
+}
 
-  let fileUrl: string | undefined;
-  if (file instanceof File && file.size > 0) {
-    const ext = (file.name.split(".").pop() || "pdf").toLowerCase().replace(/[^a-z0-9]/g, "");
-    const filename = `${id}-${Date.now()}.${ext || "pdf"}`;
-    const buffer = Buffer.from(await file.arrayBuffer());
-    fileUrl = await saveUpload(`documents/certificates/${filename}`, buffer, file.type || "application/pdf");
+const t = (v: unknown) => String(v ?? "").trim();
+const GROUPS: CertificateGroup[] = ["legalitas", "sbu", "sistem_manajemen", "keanggotaan"];
+const STATUSES: CertificateStatus[] = ["berlaku", "perlu_verifikasi", "kedaluwarsa"];
+
+export async function saveCertificateAction(id: string | null, d: CertificateFormData): Promise<SimpleResult> {
+  try {
+    await requireEditor();
+    if (!t(d.name)) return { ok: false, error: "Isi nama dokumen." };
+    const data: Omit<Certificate, "id"> = {
+      group: GROUPS.includes(d.group) ? d.group : "legalitas",
+      name: t(d.name),
+      number: t(d.number) || null,
+      issuer: t(d.issuer),
+      qualification: t(d.qualification) || undefined,
+      status: STATUSES.includes(d.status) ? d.status : "berlaku",
+      expiresAt: /^\d{4}-\d{2}-\d{2}$/.test(t(d.expiresAt)) ? t(d.expiresAt) : null,
+      note: t(d.note) || null,
+      fileUrl: d.fileUrl || null,
+      hidden: Boolean(d.hidden),
+    };
+    await saveCertificate(data, id ?? undefined);
+    revalidatePath("/", "layout");
+    return { ok: true };
+  } catch (e) {
+    return { ok: false, error: (e as Error).message };
   }
+}
 
-  const current = (await getCertificates()).find((c) => c.id === id);
+export async function deleteCertificateAction(id: string): Promise<SimpleResult> {
+  try {
+    await requireEditor();
+    await deleteCertificate(id);
+    revalidatePath("/", "layout");
+    return { ok: true };
+  } catch (e) {
+    return { ok: false, error: (e as Error).message };
+  }
+}
 
-  await updateCertificate(id, {
-    status,
-    note,
-    fileUrl: fileUrl ?? current?.fileUrl ?? null,
-  });
-
-  revalidatePath("/legalitas");
-  revalidatePath("/admin/sertifikat");
-  revalidatePath("/admin");
+export async function reorderCertificatesAction(ids: string[]): Promise<SimpleResult> {
+  try {
+    await requireEditor();
+    await reorderCertificates(ids);
+    revalidatePath("/", "layout");
+    return { ok: true };
+  } catch (e) {
+    return { ok: false, error: (e as Error).message };
+  }
 }

@@ -19,6 +19,11 @@ export interface Project {
   images: string[];
   featured: boolean;
   order: number;
+  /** Hidden projects stay in the admin but never appear on the public site. */
+  hidden?: boolean;
+  /** Optional facts shown in the project's data sheet. */
+  area?: string | null;
+  duration?: string | null;
 }
 
 export interface Client {
@@ -30,6 +35,9 @@ export interface Client {
   since?: number;
   projectCount?: number;
   flagship: boolean;
+  logo?: string | null;
+  website?: string | null;
+  hidden?: boolean;
 }
 
 export interface Service {
@@ -41,6 +49,11 @@ export interface Service {
   shortEn: string;
   descriptionId: string;
   icon: string;
+  image?: string | null;
+  /** Short scope items listed under the description on the Layanan page. */
+  points?: string[];
+  /** Project category linked from this service ("Lihat proyek terkait"). */
+  category?: string | null;
 }
 
 export interface Equipment {
@@ -49,6 +62,7 @@ export interface Equipment {
   name: string;
   spec: string;
   qty: number | null;
+  image?: string | null;
 }
 
 export interface TeamMember {
@@ -56,13 +70,15 @@ export interface TeamMember {
   name: string;
   role: string;
   order: number;
+  photo?: string | null;
 }
 
 export type CertificateStatus = "berlaku" | "perlu_verifikasi" | "kedaluwarsa";
+export type CertificateGroup = "legalitas" | "sbu" | "sistem_manajemen" | "keanggotaan";
 
 export interface Certificate {
   id: string;
-  group: "legalitas" | "sbu" | "sistem_manajemen" | "keanggotaan";
+  group: CertificateGroup;
   name: string;
   number: string | null;
   issuer: string;
@@ -71,6 +87,20 @@ export interface Certificate {
   note: string | null;
   fileUrl: string | null;
   expiresAt?: string | null;
+  hidden?: boolean;
+}
+
+export interface Category {
+  id: string;
+  label: string;
+}
+
+export interface SocialLinks {
+  instagram: string;
+  facebook: string;
+  linkedin: string;
+  youtube: string;
+  tiktok: string;
 }
 
 export interface Settings {
@@ -124,6 +154,9 @@ export interface Settings {
     category: string;
     level: string;
   };
+  social: SocialLinks;
+  /** Pre-filled text when a visitor taps a WhatsApp button. */
+  whatsappMessage: string;
 }
 
 export type RfqStatus = "baru" | "dihubungi" | "penawaran" | "menang" | "kalah";
@@ -144,10 +177,29 @@ export interface RfqEntry {
   internalNote: string | null;
 }
 
+export type AdminRole = "admin" | "editor" | "viewer";
+
 export interface AdminUser {
   username: string;
   passwordHash: string;
   salt: string;
   name: string;
-  role: "admin" | "editor" | "viewer";
+  role: AdminRole;
 }
+
+/** One picture in a media slot. `projectId` links a hero slide to a project. */
+export interface MediaItem {
+  src: string;
+  alt?: string;
+  projectId?: string | null;
+}
+
+export type MediaMap = Record<string, MediaItem[]>;
+
+/** Per-page section order and visibility chosen in the admin. */
+export interface PageLayout {
+  order?: string[];
+  hidden?: string[];
+}
+
+export type LayoutMap = Record<string, PageLayout>;

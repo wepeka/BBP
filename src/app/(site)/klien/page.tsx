@@ -1,90 +1,124 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { ArrowRight } from "lucide-react";
-import { getClients, getProjects, getTexts } from "@/lib/repo";
+import Image from "next/image";
+import { ArrowRight, ExternalLink } from "lucide-react";
+import { getClients, getLayout, getProjects, getTexts } from "@/lib/repo";
+import { fill } from "@/lib/texts";
+import { visibleSections } from "@/lib/sections";
+import { sameClient } from "@/lib/site";
+import { PageHeader } from "@/components/site/section-heading";
 
-export const metadata: Metadata = { title: "Klien Kami" };
+export async function generateMetadata(): Promise<Metadata> {
+  const t = await getTexts();
+  return { title: t["seo.klien.title"], description: t["seo.klien.description"], alternates: { canonical: "/klien" } };
+}
 
 export default async function KlienPage() {
-  const [clients, projects, t] = await Promise.all([getClients(), getProjects(), getTexts()]);
+  const [clients, projects, t, layout] = await Promise.all([getClients(), getProjects(), getTexts(), getLayout()]);
   const flagship = clients.filter((c) => c.flagship);
   const others = clients.filter((c) => !c.flagship);
+  const year = new Date().getFullYear();
 
-  return (
-    <>
-      <section className="border-b border-[var(--color-line)] bg-[var(--color-band)]">
-        <div className="mx-auto max-w-6xl px-4 py-14 sm:px-6 sm:py-20">
-          <p className="eyebrow font-data text-xs uppercase tracking-[0.14em] text-[var(--color-teal-text)]">{t["clients.eyebrow"]}</p>
-          <h1 className="mt-2 max-w-2xl text-[clamp(1.9rem,3.6vw,2.75rem)] font-extrabold text-[var(--color-ink)]">
-            {t["clients.title"]}
-          </h1>
-          <p className="mt-4 max-w-2xl whitespace-pre-line text-[16px] leading-relaxed text-[var(--color-ink-2)]">
-            {t["clients.intro"]}
-          </p>
-        </div>
-      </section>
+  const blocks: Record<string, () => React.ReactNode> = {
+    intro: () => <PageHeader key="intro" eyebrow={t["clients.eyebrow"]} title={t["clients.title"]} intro={t["clients.intro"]} />,
 
-      {flagship.map((c) => {
-        const clientProjects = projects.filter((p) => p.client === c.name);
-        return (
-          <section key={c.id} className="mx-auto max-w-6xl px-4 py-14 sm:px-6 sm:py-16">
-            <div className="card-lift rounded-xl border border-[var(--color-line)] bg-[var(--color-surface)] p-7 sm:p-9">
-              <p className="eyebrow font-data text-xs uppercase tracking-[0.14em] text-[var(--color-teal-text)]">
-                Klien Utama · Sejak {c.since}
-              </p>
-              <h2 className="mt-2 text-2xl font-extrabold text-[var(--color-ink)] sm:text-3xl">{c.name}</h2>
-              <p className="mt-2 text-[14.5px] text-[var(--color-ink-2)]">
-                {c.city}, {c.province}
-              </p>
-              <div className="mt-5 grid grid-cols-2 gap-4 sm:grid-cols-3">
-                <div>
-                  <p className="font-[family-name:var(--font-display)] text-2xl font-extrabold tabular-nums text-[var(--color-teal-text)]">
-                    {c.projectCount}+
-                  </p>
-                  <p className="text-[13px] text-[var(--color-ink-2)]">proyek dikerjakan</p>
+    flagship: () =>
+      flagship.length ? (
+        <section id="sec-flagship" key="flagship" className="container-x space-y-5 py-16 sm:py-20">
+          {flagship.map((c) => {
+            const clientProjects = projects.filter((p) => sameClient(p.client, c.name));
+            const cities = new Set(clientProjects.map((p) => p.city)).size;
+            const stats = [
+              c.projectCount ? [`${c.projectCount}+`, "proyek dikerjakan"] : null,
+              c.since ? [String(year - c.since), "tahun kerja sama"] : null,
+              cities ? [String(cities), "kota berbeda"] : null,
+            ].filter(Boolean) as [string, string][];
+            return (
+              <article key={c.id} className="card overflow-hidden">
+                <div className="grid gap-8 p-7 sm:p-10 lg:grid-cols-[1.2fr_1fr] lg:items-center">
+                  <div>
+                    <p className="eyebrow">{fill(t["clients.flagship.label"], { tahun: c.since ?? "" })}</p>
+                    <div className="mt-5 flex items-center gap-4">
+                      {c.logo && (
+                        <span className="relative h-14 w-24 shrink-0">
+                          <Image src={c.logo} alt="" fill sizes="96px" className="object-contain object-left" />
+                        </span>
+                      )}
+                      <h2 className="h-section text-[var(--color-ink)]">{c.name}</h2>
+                    </div>
+                    <p className="mt-3 text-[15px] text-[var(--color-ink-2)]">
+                      {c.city}, {c.province}
+                      {c.note ? ` · ${c.note}` : ""}
+                    </p>
+                    <div className="mt-7 flex flex-wrap gap-4">
+                      {clientProjects.length > 0 && (
+                        <Link href={`/proyek?klien=${encodeURIComponent(c.name)}`} className="btn btn-primary btn-sm">
+                          {fill(t["clients.flagship.link"], { klien: c.name })} <ArrowRight size={15} aria-hidden="true" />
+                        </Link>
+                      )}
+                      {c.website && (
+                        <a href={c.website.startsWith("http") ? c.website : `https://${c.website}`} target="_blank" rel="noopener noreferrer" className="link-arrow text-[14px]">
+                          Situs resmi <ExternalLink size={14} aria-hidden="true" />
+                        </a>
+                      )}
+                    </div>
+                  </div>
+                  {stats.length > 0 && (
+                    <dl className="grid grid-cols-3 overflow-hidden rounded-[6px] border border-[var(--color-line)]">
+                      {stats.map(([n, l], i) => (
+                        <div key={l} className={`p-4 sm:p-5 ${i > 0 ? "border-l border-[var(--color-line)]" : ""}`}>
+                          <dd className="font-[family-name:var(--font-display)] text-3xl font-extrabold text-[var(--color-teal-text)] sm:text-4xl">{n}</dd>
+                          <dt className="mt-1 text-[13px] text-[var(--color-ink-2)]">{l}</dt>
+                        </div>
+                      ))}
+                    </dl>
+                  )}
                 </div>
-                <div>
-                  <p className="font-[family-name:var(--font-display)] text-2xl font-extrabold tabular-nums text-[var(--color-teal-text)]">
-                    {new Date().getFullYear() - (c.since ?? 2012)}
-                  </p>
-                  <p className="text-[13px] text-[var(--color-ink-2)]">tahun kerja sama</p>
-                </div>
-                <div>
-                  <p className="font-[family-name:var(--font-display)] text-2xl font-extrabold tabular-nums text-[var(--color-teal-text)]">
-                    {new Set(clientProjects.map((p) => p.city)).size || "10+"}
-                  </p>
-                  <p className="text-[13px] text-[var(--color-ink-2)]">kota berbeda</p>
-                </div>
-              </div>
-              <Link
-                href={`/proyek?kota=`}
-                className="mt-6 inline-flex items-center gap-1.5 text-[14px] font-semibold text-[var(--color-teal-text)]"
-              >
-                Lihat proyek untuk {c.name} <ArrowRight size={14} aria-hidden="true" />
-              </Link>
-            </div>
-          </section>
-        );
-      })}
+              </article>
+            );
+          })}
+        </section>
+      ) : null,
 
-      <section className="border-t border-[var(--color-line)] bg-[var(--color-surface-2)] py-14 sm:py-16">
-        <div className="mx-auto max-w-6xl px-4 sm:px-6">
-          <h2 className="font-data text-xs font-medium uppercase tracking-[0.12em] text-[var(--color-ink-3)]">
-            {t["clients.others"]}
-          </h2>
-          <div className="mt-5 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-            {others.map((c) => (
-              <div key={c.id} className="card-lift rounded-xl border border-[var(--color-line)] bg-[var(--color-surface)] p-5">
-                <p className="font-semibold leading-snug text-[var(--color-ink)]">{c.name}</p>
-                {c.note && <p className="text-[12.5px] text-[var(--color-ink-3)]">{c.note}</p>}
-                <p className="mt-1.5 text-[13px] text-[var(--color-ink-2)]">
-                  {c.city}, {c.province}
-                </p>
-              </div>
-            ))}
+    others: () =>
+      others.length ? (
+        <section id="sec-others" key="others" className="border-t border-[var(--color-line)] bg-[var(--color-band-2)] py-16 sm:py-20">
+          <div className="container-x">
+            <h2 className="h-section text-[var(--color-ink)]">{t["clients.others"]}</h2>
+            <ul className="mt-10 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+              {others.map((c) => {
+                const count = projects.filter((p) => sameClient(p.client, c.name)).length;
+                return (
+                  <li key={c.id} className="card card-lift flex items-center gap-4 p-5">
+                    <span className="relative flex h-14 w-14 shrink-0 items-center justify-center overflow-hidden rounded-[6px] border border-[var(--color-line)] bg-white">
+                      {c.logo ? (
+                        <Image src={c.logo} alt="" fill sizes="56px" className="object-contain p-1.5" />
+                      ) : (
+                        <span className="font-[family-name:var(--font-display)] text-[15px] font-extrabold text-[var(--color-teal)]">
+                          {c.name.replace(/^(PT|CV)\.?\s*/i, "").slice(0, 2).toUpperCase()}
+                        </span>
+                      )}
+                    </span>
+                    <div className="min-w-0">
+                      <p className="font-semibold leading-snug text-[var(--color-ink)]">{c.name}</p>
+                      <p className="mt-0.5 text-[13px] text-[var(--color-ink-2)]">
+                        {c.city}, {c.province}
+                        {c.note ? ` · ${c.note}` : ""}
+                      </p>
+                      {count > 0 && (
+                        <Link href={`/proyek?klien=${encodeURIComponent(c.name)}`} className="mt-1 inline-block text-[12.5px] font-medium text-[var(--color-teal-text)] hover:underline">
+                          {count} proyek →
+                        </Link>
+                      )}
+                    </div>
+                  </li>
+                );
+              })}
+            </ul>
           </div>
-        </div>
-      </section>
-    </>
-  );
+        </section>
+      ) : null,
+  };
+
+  return <>{visibleSections("klien", layout).map((id) => blocks[id]?.())}</>;
 }

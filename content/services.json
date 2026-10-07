@@ -7,7 +7,8 @@
     "shortId": "Pekerjaan struktur beton bertulang dan penyelesaian arsitektural untuk gedung industri, komersial, dan hunian.",
     "shortEn": "Reinforced concrete structural works and architectural finishing for industrial, commercial, and residential buildings.",
     "descriptionId": "Mencakup pekerjaan pondasi, kolom, balok, dan pelat beton bertulang, hingga penyelesaian arsitektur seperti dinding, lantai, dan fasad. Dikerjakan dengan pengawasan mutu mengikuti sistem manajemen ISO 9001.",
-    "icon": "building-2"
+    "icon": "building-2",
+    "category": "industri"
   },
   {
     "id": "fabrikasi-erection-baja",
@@ -17,7 +18,8 @@
     "shortId": "Fabrikasi rangka baja di workshop 2.400 m² dan pemasangan (erection) di lokasi proyek menggunakan crane hingga 25 ton.",
     "shortEn": "Steel frame fabrication in a 2,400 m² workshop and on-site erection using cranes up to 25 tonnes.",
     "descriptionId": "Fabrikasi kolom, balok, gording, dan rangka atap baja di workshop sendiri, lalu dipasang di lapangan dengan rough-terrain crane kapasitas 25 ton dan knuckle boom crane 3 ton. Digunakan untuk gudang, depo, dan bangunan bentang lebar.",
-    "icon": "factory"
+    "icon": "factory",
+    "category": "struktur-baja"
   },
   {
     "id": "atap-insulasi",
@@ -27,7 +29,8 @@
     "shortId": "Pemasangan penutup atap dan insulasi panas untuk bangunan gudang, pabrik, dan fasilitas industri.",
     "shortEn": "Roof covering and thermal insulation installation for warehouses, factories, and industrial facilities.",
     "descriptionId": "Instalasi atap metal, membran, dan sistem insulasi untuk menjaga suhu ruang produksi dan gudang tetap stabil, termasuk pada bangunan bentang lebar seperti depo rokok dan gudang industri.",
-    "icon": "layers"
+    "icon": "layers",
+    "category": "gudang"
   },
   {
     "id": "mekanikal-elektrikal-plumbing",
@@ -37,7 +40,8 @@
     "shortId": "Instalasi sistem kelistrikan, pemipaan, dan mekanikal untuk gedung industri dan fasilitas pendukung seperti rumah genset dan gardu.",
     "shortEn": "Electrical, piping, and mechanical system installation for industrial buildings and support facilities such as generator houses and substations.",
     "descriptionId": "Mencakup instalasi panel listrik, jaringan pemipaan, dan pekerjaan mekanikal termasuk rumah genset dan gardu listrik, seperti dikerjakan untuk Unit VII PT. Gudang Garam Tbk.",
-    "icon": "zap"
+    "icon": "zap",
+    "category": "mep"
   },
   {
     "id": "sipil-infrastruktur",
@@ -47,7 +51,8 @@
     "shortId": "Cut and fill lahan, pekerjaan jalan dan saluran, serta pemetaan lapangan dengan total station.",
     "shortEn": "Land cut-and-fill, road and drainage works, and site mapping using total station equipment.",
     "descriptionId": "Pekerjaan tanah dan sipil pendukung konstruksi: cut and fill lahan, perkerasan jalan, normalisasi saluran, dan pemetaan menggunakan 2 unit total station serta alat berat sendiri.",
-    "icon": "map"
+    "icon": "map",
+    "category": "sipil"
   },
   {
     "id": "pengadaan-barang-jasa",
@@ -57,6 +62,7 @@
     "shortId": "Pengadaan material dan jasa penunjang konstruksi, termasuk untuk proyek infrastruktur nasional.",
     "shortEn": "Procurement of materials and support services for construction, including national infrastructure projects.",
     "descriptionId": "Menyediakan barang dan jasa yang menunjang pekerjaan konstruksi klien, salah satunya penyediaan tail sealant untuk shielded tunnel boring machine pada proyek Kereta Cepat Jakarta–Bandung bersama PT. Kereta Cepat Indonesia China.",
-    "icon": "package"
+    "icon": "package",
+    "category": "pengadaan"
   }
 ]

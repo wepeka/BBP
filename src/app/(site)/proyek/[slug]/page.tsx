@@ -1,188 +1,231 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { ChevronRight, MapPin, Calendar, Building, ArrowRight } from "lucide-react";
-import { getProjects, getProjectBySlug, getSettings } from "@/lib/repo";
-import { categoryLabel } from "@/lib/categories";
+import { ChevronRight, ArrowRight, ArrowLeft } from "lucide-react";
+import { getCategories, getProjects, getProjectBySlug, getSettings, getTexts } from "@/lib/repo";
+import { categoryLabels } from "@/lib/categories";
 import { distanceKm } from "@/lib/geo";
+import { fill } from "@/lib/texts";
+import { waLink } from "@/lib/site";
 import { ProjectGallery } from "@/components/site/project-gallery";
 import { ProjectCard } from "@/components/site/project-card";
 import { LocationMapClient } from "@/components/site/location-map-loader";
 
-export async function generateMetadata({
-  params,
-}: {
-  params: Promise<{ slug: string }>;
-}): Promise<Metadata> {
+export async function generateStaticParams() {
+  const projects = await getProjects();
+  return projects.map((p) => ({ slug: p.slug }));
+}
+
+export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
   const { slug } = await params;
   const project = await getProjectBySlug(slug);
   if (!project) return { title: "Proyek tidak ditemukan" };
+  const description = `${project.scope} ${project.city}, ${project.province} · ${project.year}.`.trim();
   return {
     title: project.titleId,
-    description: project.scope,
+    description,
+    alternates: { canonical: `/proyek/${project.slug}` },
+    openGraph: {
+      title: project.titleId,
+      description,
+      type: "article",
+      ...(project.images[0] ? { images: [{ url: project.images[0], alt: project.titleId }] } : {}),
+    },
   };
 }
 
-export default async function ProjectDetailPage({
-  params,
-}: {
-  params: Promise<{ slug: string }>;
-}) {
+export default async function ProjectDetailPage({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
-  const [project, allProjects, settings] = await Promise.all([
+  const [project, allProjects, settings, categories, t] = await Promise.all([
     getProjectBySlug(slug),
     getProjects(),
     getSettings(),
+    getCategories(),
+    getTexts(),
   ]);
-
   if (!project) notFound();
 
-  const related = allProjects
-    .filter(
-      (p) =>
-        p.id !== project.id &&
-        (p.categories.some((c) => project.categories.includes(c)) || p.client === project.client)
-    )
-    .slice(0, 3);
+  const labels = categoryLabels(categories);
+  const labelOf = (id: string | undefined) => (id ? labels[id] ?? id : "Proyek");
 
-  const distance = Math.round(distanceKm(settings.officeLat, settings.officeLng, project.lat, project.lng));
-  const paragraphs = project.descriptionId.split("\n\n");
+  const related = allProjects
+    .filter((p) => p.id !== project.id && (p.categories.some((c) => project.categories.includes(c)) || (project.client && p.client === project.client)))
+    .slice(0, 3);
+  const idx = allProjects.findIndex((p) => p.id === project.id);
+  const prev = idx > 0 ? allProjects[idx - 1] : null;
+  const next = idx < allProjects.length - 1 ? allProjects[idx + 1] : null;
+
+  const hasCoords = Boolean(project.lat || project.lng);
+  const distance = hasCoords ? Math.round(distanceKm(settings.officeLat, settings.officeLng, project.lat, project.lng)) : null;
+  const paragraphs = project.descriptionId.split(/\n\s*\n/).filter((p) => p.trim());
+
+  type Cell = { label: string; value: React.ReactNode };
+  const rows: Cell[][] = [];
+  if (project.client) {
+    rows.push([
+      {
+        label: "Klien",
+        value: (
+          <>
+            {project.client}
+            {project.clientNote && <span className="block text-[12px] font-normal text-[var(--color-ink-3)]">{project.clientNote}</span>}
+          </>
+        ),
+      },
+    ]);
+  }
+  rows.push([
+    { label: "Lokasi", value: `${project.city}, ${project.province}` },
+    { label: "Periode", value: project.year },
+  ]);
+  rows.push([
+    { label: "Status", value: project.status === "berjalan" ? "Sedang berjalan" : "Selesai" },
+    { label: "Kategori", value: project.categories.map((c) => labelOf(c)).join(", ") },
+  ]);
+  const extra = [
+    project.area ? { label: "Luas / volume", value: project.area } : null,
+    project.duration ? { label: "Durasi", value: project.duration } : null,
+  ].filter(Boolean) as Cell[];
+  if (extra.length) rows.push(extra);
+  if (project.scope) rows.push([{ label: "Lingkup", value: project.scope }]);
 
   return (
     <>
       <div className="border-b border-[var(--color-line)] bg-[var(--color-band)]">
-        <div className="mx-auto max-w-6xl px-4 py-4 sm:px-6">
+        <div className="container-x py-4">
           <nav aria-label="Breadcrumb" className="flex items-center gap-1.5 text-[13px] text-[var(--color-ink-3)]">
-            <Link href="/" className="hover:text-[var(--color-ink)]">
-              Beranda
-            </Link>
+            <Link href="/" className="hover:text-[var(--color-ink)]">Beranda</Link>
             <ChevronRight size={13} aria-hidden="true" />
-            <Link href="/proyek" className="hover:text-[var(--color-ink)]">
-              Proyek
-            </Link>
+            <Link href="/proyek" className="hover:text-[var(--color-ink)]">{t["common.nav.proyek"]}</Link>
             <ChevronRight size={13} aria-hidden="true" />
             <span className="truncate text-[var(--color-ink-2)]">{project.titleId}</span>
           </nav>
         </div>
       </div>
 
-      <section className="mx-auto max-w-6xl px-4 py-10 sm:px-6 sm:py-12">
-        <div className="flex flex-wrap items-center gap-2">
+      <section className="container-x py-10 sm:py-14">
+        <div className="hero-in flex flex-wrap items-center gap-2" data-no-reveal>
           {project.categories.map((c) => (
-            <span
+            <Link
               key={c}
-              className="rounded-full bg-[var(--color-teal-soft)] px-3 py-1 font-data text-[11px] uppercase tracking-wide text-[var(--color-teal-text)]"
+              href={`/proyek?kategori=${c}`}
+              className="rounded-[4px] bg-[var(--color-teal-soft)] px-2.5 py-1 font-data text-[11px] uppercase tracking-wider text-[var(--color-teal-text)] hover:bg-[var(--color-teal)] hover:text-white"
             >
-              {categoryLabel(c)}
-            </span>
+              {labelOf(c)}
+            </Link>
           ))}
           {project.status === "berjalan" && (
-            <span className="rounded-full bg-[var(--color-yellow)] px-3 py-1 font-data text-[11px] uppercase tracking-wide text-[var(--color-yellow-ink)]">
-              Sedang Berjalan
-            </span>
+            <span className="rounded-[4px] bg-[var(--color-yellow)] px-2.5 py-1 font-data text-[11px] uppercase tracking-wider text-[#17181a]">Sedang berjalan</span>
           )}
         </div>
-        <h1 className="mt-4 max-w-3xl text-[clamp(1.6rem,3.2vw,2.4rem)] font-extrabold leading-tight text-[var(--color-ink)]">
+        <h1 className="h-page hero-in mt-5 max-w-4xl text-[var(--color-ink)]" style={{ "--d": "60ms" } as React.CSSProperties} data-no-reveal>
           {project.titleId}
         </h1>
 
-        <div className="mt-8 grid gap-8 lg:grid-cols-[1.3fr_1fr]">
-          <ProjectGallery images={project.images} alt={project.titleId} />
+        <div className="mt-10 grid gap-8 lg:grid-cols-[1.35fr_1fr] lg:items-start">
+          <div data-no-reveal>
+            <ProjectGallery images={project.images} alt={project.titleId} />
+          </div>
 
-          <aside className="rounded-xl border border-[var(--color-line)] bg-[var(--color-surface)] p-6">
-            <h2 className="font-data text-xs font-medium uppercase tracking-[0.12em] text-[var(--color-ink-3)]">
-              Lembar Data
-            </h2>
-            <dl className="mt-4 space-y-4 font-data text-[13.5px]">
-              {project.client && (
-                <div>
-                  <dt className="flex items-center gap-1.5 text-[var(--color-ink-3)]">
-                    <Building size={14} aria-hidden="true" /> Klien
-                  </dt>
-                  <dd className="mt-0.5 text-[var(--color-ink)]">
-                    {project.client}
-                    {project.clientNote && (
-                      <span className="block text-[12px] text-[var(--color-ink-3)]">{project.clientNote}</span>
-                    )}
-                  </dd>
-                </div>
+          <aside data-no-reveal className="lg:sticky lg:top-24">
+            <p className="font-data text-[11px] uppercase tracking-[0.16em] text-[var(--color-ink-3)]">{t["project.sheet"]}</p>
+            <div className="tblock mt-3 rounded-[6px]" style={{ gridTemplateColumns: "1fr 1fr" }}>
+              {rows.flatMap((row, r) =>
+                row.map((cell, c) => {
+                  const last = r === rows.length - 1;
+                  const cls = [row.length === 1 ? "tb-full" : c === row.length - 1 ? "tb-end" : "", last ? "tb-last" : ""].join(" ");
+                  return (
+                    <div key={`${r}-${c}`} className={cls}>
+                      <span className="tb-label">{cell.label}</span>
+                      <span className="tb-value">{cell.value}</span>
+                    </div>
+                  );
+                })
               )}
-              <div>
-                <dt className="flex items-center gap-1.5 text-[var(--color-ink-3)]">
-                  <MapPin size={14} aria-hidden="true" /> Lokasi
-                </dt>
-                <dd className="mt-0.5 text-[var(--color-ink)]">
-                  {project.city}, {project.province}
-                </dd>
-              </div>
-              <div>
-                <dt className="flex items-center gap-1.5 text-[var(--color-ink-3)]">
-                  <Calendar size={14} aria-hidden="true" /> Periode
-                </dt>
-                <dd className="mt-0.5 text-[var(--color-ink)]">{project.year}</dd>
-              </div>
-              <div>
-                <dt className="text-[var(--color-ink-3)]">Lingkup</dt>
-                <dd className="mt-0.5 leading-relaxed text-[var(--color-ink)]">{project.scope}</dd>
-              </div>
-            </dl>
-
-            <div className="mt-5 h-[160px] w-full">
-              <LocationMapClient lat={project.lat} lng={project.lng} />
             </div>
-            <p className="mt-2 font-data text-[12px] text-[var(--color-ink-3)]">
-              ≈ {distance} km dari kantor pusat BBP, Kediri
-            </p>
+            {hasCoords && (
+              <>
+                <div className="mt-4 h-[170px] w-full overflow-hidden rounded-[6px] border border-[var(--color-line)]">
+                  <LocationMapClient lat={project.lat} lng={project.lng} />
+                </div>
+                {distance !== null && distance > 1 && (
+                  <p className="mt-2 font-data text-[12px] text-[var(--color-ink-3)]">≈ {distance.toLocaleString("id-ID")} km dari kantor pusat BBP, {settings.city}</p>
+                )}
+              </>
+            )}
           </aside>
         </div>
 
-        <div className="mt-10 max-w-3xl space-y-4 text-[15.5px] leading-relaxed text-[var(--color-ink-2)]">
+        <div className="mt-12 max-w-3xl space-y-4 text-[16.5px] leading-relaxed text-[var(--color-ink-2)]">
           {paragraphs.map((para, i) =>
             para.trim().startsWith("•") ? (
-              <ul key={i} className="list-disc space-y-1.5 pl-5">
+              <ul key={i} className="space-y-2">
                 {para
                   .split("\n")
                   .filter(Boolean)
                   .map((line, j) => (
-                    <li key={j}>{line.replace(/^•\s*/, "")}</li>
+                    <li key={j} className="flex gap-2.5">
+                      <span className="mt-[11px] h-1.5 w-1.5 shrink-0 bg-[var(--color-teal)]" aria-hidden="true" />
+                      {line.replace(/^•\s*/, "")}
+                    </li>
                   ))}
               </ul>
             ) : (
-              <p key={i}>{para}</p>
+              <p key={i} className="whitespace-pre-line">{para}</p>
             )
           )}
         </div>
 
-        <div className="mt-10 rounded-md bg-[var(--color-panel-dark)] p-7 sm:p-8">
-          <p className="text-lg font-bold text-[var(--color-on-panel-dark)]">
-            Butuh pekerjaan {categoryLabel(project.categories[0]).toLowerCase()} seperti ini?
+        <div className="mt-12 flex flex-col items-start justify-between gap-6 rounded-[8px] bg-[var(--color-panel-dark)] p-7 sm:flex-row sm:items-center sm:p-9">
+          <p className="max-w-xl font-[family-name:var(--font-display)] text-xl font-bold text-[var(--color-on-panel-dark)]">
+            {fill(t["project.cta.title"], { kategori: labelOf(project.categories[0]).toLowerCase() })}
           </p>
-          <div className="mt-4 flex flex-wrap gap-3">
-            <Link
-              href="/hubungi"
-              className="inline-flex items-center gap-2 rounded-md bg-[var(--color-yellow)] px-5 py-3 text-[14.5px] font-semibold text-[var(--color-yellow-ink)]"
-            >
-              Kirim Rencana Proyek Anda <ArrowRight size={16} aria-hidden="true" />
+          <div className="flex flex-wrap gap-3">
+            <Link href="/hubungi" className="btn btn-yellow">
+              {t["project.cta.button"]} <ArrowRight size={16} aria-hidden="true" />
             </Link>
             <a
-              href={`https://wa.me/${settings.whatsapp}`}
+              href={waLink(settings.whatsapp, `Halo BBP, saya tertarik dengan proyek "${project.titleId}".`)}
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-flex items-center gap-2 rounded-md border border-white/30 px-5 py-3 text-[14.5px] font-semibold text-white"
+              className="btn btn-outline-light"
             >
-              Chat WhatsApp
+              {t["home.cta.whatsapp"]}
             </a>
           </div>
         </div>
+
+        {(prev || next) && (
+          <nav aria-label="Proyek lain" className="mt-10 grid gap-3 sm:grid-cols-2">
+            {prev ? (
+              <Link href={`/proyek/${prev.slug}`} className="card group p-5 hover:border-[var(--color-teal)]">
+                <span className="inline-flex items-center gap-1.5 font-data text-[11px] uppercase tracking-[0.14em] text-[var(--color-ink-3)]">
+                  <ArrowLeft size={13} aria-hidden="true" /> Sebelumnya
+                </span>
+                <span className="mt-1.5 block font-semibold text-[var(--color-ink)] group-hover:text-[var(--color-teal-text)]">{prev.titleId}</span>
+              </Link>
+            ) : (
+              <span />
+            )}
+            {next && (
+              <Link href={`/proyek/${next.slug}`} className="card group p-5 text-right hover:border-[var(--color-teal)]">
+                <span className="inline-flex items-center gap-1.5 font-data text-[11px] uppercase tracking-[0.14em] text-[var(--color-ink-3)]">
+                  Berikutnya <ArrowRight size={13} aria-hidden="true" />
+                </span>
+                <span className="mt-1.5 block font-semibold text-[var(--color-ink)] group-hover:text-[var(--color-teal-text)]">{next.titleId}</span>
+              </Link>
+            )}
+          </nav>
+        )}
       </section>
 
       {related.length > 0 && (
-        <section className="border-t border-[var(--color-line)] bg-[var(--color-surface-2)] py-14">
-          <div className="mx-auto max-w-6xl px-4 sm:px-6">
-            <h2 className="text-xl font-bold text-[var(--color-ink)]">Proyek serupa</h2>
-            <div className="mt-6 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+        <section className="border-t border-[var(--color-line)] bg-[var(--color-band-2)] py-16">
+          <div className="container-x">
+            <h2 className="h-section text-[var(--color-ink)]">{t["project.related"]}</h2>
+            <div className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
               {related.map((p) => (
-                <ProjectCard key={p.id} project={p} />
+                <ProjectCard key={p.id} project={p} categoryLabel={labelOf(p.categories[0])} />
               ))}
             </div>
           </div>

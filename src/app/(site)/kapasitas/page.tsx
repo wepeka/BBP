@@ -1,96 +1,114 @@
 import type { Metadata } from "next";
 import Image from "next/image";
-import { Truck, Wrench, Warehouse, Gauge } from "lucide-react";
-import { getEquipment, getTexts } from "@/lib/repo";
+import { Gauge } from "lucide-react";
+import { getEquipment, getLayout, getMedia, getTexts } from "@/lib/repo";
 import { parseList } from "@/lib/texts";
+import { mediaFor } from "@/lib/media";
+import { visibleSections } from "@/lib/sections";
+import { PageHeader, SectionHeading } from "@/components/site/section-heading";
+import { PhotoGrid } from "@/components/site/photo-grid";
 
-export const metadata: Metadata = { title: "Kapasitas & Alat" };
-
+export async function generateMetadata(): Promise<Metadata> {
+  const t = await getTexts();
+  return { title: t["seo.kapasitas.title"], description: t["seo.kapasitas.description"], alternates: { canonical: "/kapasitas" } };
+}
 
 export default async function KapasitasPage() {
-  const [equipment, t] = await Promise.all([getEquipment(), getTexts()]);
-  const workshop = parseList(t["capacity.workshop"]);
+  const [equipment, t, media, layout] = await Promise.all([getEquipment(), getTexts(), getMedia(), getLayout()]);
   const categories = Array.from(new Set(equipment.map((e) => e.category)));
 
-  return (
-    <>
-      <section className="border-b border-[var(--color-line)] bg-[var(--color-band)]">
-        <div className="mx-auto max-w-6xl px-4 py-14 sm:px-6 sm:py-20">
-          <p className="eyebrow font-data text-xs uppercase tracking-[0.14em] text-[var(--color-teal-text)]">{t["capacity.eyebrow"]}</p>
-          <h1 className="mt-2 max-w-2xl text-[clamp(1.9rem,3.6vw,2.75rem)] font-extrabold text-[var(--color-ink)]">
-            {t["capacity.title"]}
-          </h1>
-          <p className="mt-4 max-w-2xl whitespace-pre-line text-[16px] leading-relaxed text-[var(--color-ink-2)]">
-            {t["capacity.intro"]}
-          </p>
-        </div>
-      </section>
+  const blocks: Record<string, () => React.ReactNode> = {
+    intro: () => <PageHeader key="intro" eyebrow={t["capacity.eyebrow"]} title={t["capacity.title"]} intro={t["capacity.intro"]} />,
 
-      <section className="mx-auto max-w-6xl px-4 py-14 sm:px-6 sm:py-16">
-        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-          {workshop.map(([value, label], i) => (
-            <div key={i} className="card-lift rounded-xl border border-[var(--color-line)] bg-[var(--color-surface)] p-5">
-              <Warehouse size={20} className="text-[var(--color-teal)]" aria-hidden="true" />
-              <p className="mt-3 font-[family-name:var(--font-display)] text-xl font-extrabold tabular-nums text-[var(--color-ink)]">
-                {value}
-              </p>
-              <p className="mt-1 text-[13px] text-[var(--color-ink-2)]">{label ?? ""}</p>
-            </div>
-          ))}
-        </div>
-
-        <div className="mt-6 grid gap-5 lg:grid-cols-3">
-          {["/images/workshop/1.jpeg", "/images/workshop/2.jpeg", "/images/workshop/3.jpeg"].map((src) => (
-            <div key={src} className="relative aspect-[4/3] overflow-hidden rounded-md bg-[var(--color-surface-2)]">
-              <Image src={src} alt="Workshop fabrikasi baja BBP" fill sizes="(min-width:1024px) 33vw, 90vw" className="object-cover" />
-            </div>
-          ))}
-        </div>
-      </section>
-
-      <section className="border-t border-[var(--color-line)] bg-[var(--color-surface-2)] py-16 sm:py-20">
-        <div className="mx-auto max-w-6xl px-4 sm:px-6">
-          <div className="mb-8 flex items-center gap-3">
-            <Truck size={22} className="text-[var(--color-teal)]" aria-hidden="true" />
-            <h2 className="text-2xl font-extrabold text-[var(--color-ink)]">{t["capacity.equipment.title"]}</h2>
-          </div>
-          <div className="space-y-8">
-            {categories.map((cat) => (
-              <div key={cat}>
-                <h3 className="flex items-center gap-2 font-data text-[13px] font-medium uppercase tracking-[0.1em] text-[var(--color-ink-3)]">
-                  <Wrench size={14} aria-hidden="true" /> {cat}
-                </h3>
-                <div className="mt-3 overflow-x-auto rounded-md border border-[var(--color-line)] bg-[var(--color-surface)]">
-                  <table className="w-full min-w-[480px] border-collapse text-[14px]">
-                    <tbody>
-                      {equipment
-                        .filter((e) => e.category === cat)
-                        .map((e) => (
-                          <tr key={e.id} className="border-b border-[var(--color-line)] last:border-0">
-                            <td className="px-4 py-3 font-medium text-[var(--color-ink)]">{e.name}</td>
-                            <td className="px-4 py-3 text-[var(--color-ink-2)]">{e.spec}</td>
-                            <td className="whitespace-nowrap px-4 py-3 text-right font-data tabular-nums text-[var(--color-ink-2)]">
-                              {e.qty ? `${e.qty} unit` : ""}
-                            </td>
-                          </tr>
-                        ))}
-                    </tbody>
-                  </table>
-                </div>
+    workshop: () => {
+      const rows = parseList(t["capacity.workshop"]);
+      if (!rows.length) return null;
+      return (
+        <section id="sec-workshop" key="workshop" className="container-x pt-16 sm:pt-20">
+          <dl className="grid overflow-hidden rounded-[6px] border border-[var(--color-line)] bg-[var(--color-surface)] sm:grid-cols-2 lg:grid-cols-4">
+            {rows.map(([value, label], i) => (
+              <div
+                key={i}
+                className="border-b border-[var(--color-line)] p-6 last:border-b-0 sm:[&:nth-child(odd)]:border-r lg:border-b-0 lg:border-r lg:last:border-r-0"
+              >
+                <dt className="font-data text-[10.5px] uppercase tracking-[0.16em] text-[var(--color-ink-3)]">{label ?? ""}</dt>
+                <dd className="mt-2 font-[family-name:var(--font-display)] text-[1.35rem] font-extrabold leading-tight text-[var(--color-ink)]">{value}</dd>
               </div>
             ))}
-          </div>
-        </div>
-      </section>
+          </dl>
+        </section>
+      );
+    },
 
-      <section className="mx-auto max-w-6xl px-4 py-14 sm:px-6">
-        <div className="flex items-start gap-4 card-lift rounded-xl border border-[var(--color-line)] bg-[var(--color-surface)] p-6">
-          <Gauge size={22} className="mt-0.5 shrink-0 text-[var(--color-teal)]" aria-hidden="true" />
-          <p className="whitespace-pre-line text-[14.5px] leading-relaxed text-[var(--color-ink-2)]">
-            {t["capacity.note"]}
-          </p>
+    gallery: () => {
+      const photos = mediaFor(media, "capacity.gallery");
+      if (!photos.length) return null;
+      return (
+        <section id="sec-gallery" key="gallery" className="container-x py-16 sm:py-20">
+          <SectionHeading title={t["capacity.gallery.title"]} />
+          <PhotoGrid photos={photos.map((p) => ({ src: p.src, alt: p.alt ?? t["capacity.gallery.title"] }))} className="mt-8" />
+        </section>
+      );
+    },
+
+    equipment: () =>
+      equipment.length ? (
+        <section id="sec-equipment" key="equipment" className="border-y border-[var(--color-line)] bg-[var(--color-band-2)] py-20 sm:py-24">
+          <div className="container-x">
+            <SectionHeading title={t["capacity.equipment.title"]} />
+            <div className="mt-10 space-y-10">
+              {categories.map((cat) => (
+                <div key={cat}>
+                  <h3 className="font-data text-[11.5px] font-medium uppercase tracking-[0.16em] text-[var(--color-teal-text)]">{cat}</h3>
+                  <div className="mt-3 overflow-x-auto rounded-[6px] border border-[var(--color-line)] bg-[var(--color-surface)]">
+                    <table className="w-full min-w-[520px] border-collapse text-[14.5px]">
+                      <thead className="sr-only">
+                        <tr>
+                          <th>Nama alat</th>
+                          <th>Spesifikasi</th>
+                          <th>Jumlah</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {equipment
+                          .filter((e) => e.category === cat)
+                          .map((e) => (
+                            <tr key={e.id} className="border-b border-[var(--color-line)] last:border-0">
+                              <td className="px-5 py-3.5 font-medium text-[var(--color-ink)]">
+                                <span className="flex items-center gap-3">
+                                  {e.image && (
+                                    <span className="relative h-11 w-14 shrink-0 overflow-hidden rounded-[4px] bg-[var(--color-wf-fill)]">
+                                      <Image src={e.image} alt="" fill sizes="56px" className="object-cover" />
+                                    </span>
+                                  )}
+                                  {e.name}
+                                </span>
+                              </td>
+                              <td className="px-5 py-3.5 text-[var(--color-ink-2)]">{e.spec}</td>
+                              <td className="whitespace-nowrap px-5 py-3.5 text-right font-data tabular-nums text-[var(--color-ink-2)]">
+                                {e.qty ? `${e.qty} unit` : ""}
+                              </td>
+                            </tr>
+                          ))}
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </section>
+      ) : null,
+
+    note: () => (
+      <section id="sec-note" key="note" className="container-x py-16">
+        <div className="card flex items-start gap-5 p-7">
+          <Gauge size={24} className="mt-0.5 shrink-0 text-[var(--color-teal)]" aria-hidden="true" />
+          <p className="whitespace-pre-line text-[16px] leading-relaxed text-[var(--color-ink-2)]">{t["capacity.note"]}</p>
         </div>
       </section>
-    </>
-  );
+    ),
+  };
+
+  return <>{visibleSections("kapasitas", layout).map((id) => blocks[id]?.())}</>;
 }

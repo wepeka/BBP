@@ -1,43 +1,50 @@
 "use server";
 
-import { createRfqEntry } from "@/lib/repo";
-import { getServices } from "@/lib/repo";
+import { createRfqEntry, getServices, getTexts } from "@/lib/repo";
 
 export interface RfqFormState {
   ok: boolean;
   message: string;
   errors?: Record<string, string>;
+  /** What the visitor typed, so a form with errors keeps their input. */
+  values?: Record<string, string>;
 }
 
-export async function submitRfq(
-  _prevState: RfqFormState,
-  formData: FormData
-): Promise<RfqFormState> {
-  const name = String(formData.get("name") ?? "").trim();
-  const company = String(formData.get("company") ?? "").trim();
-  const email = String(formData.get("email") ?? "").trim();
-  const whatsapp = String(formData.get("whatsapp") ?? "").trim();
-  const serviceId = String(formData.get("serviceId") ?? "").trim();
-  const location = String(formData.get("location") ?? "").trim();
-  const areaEstimate = String(formData.get("areaEstimate") ?? "").trim();
-  const targetStart = String(formData.get("targetStart") ?? "").trim();
-  const message = String(formData.get("message") ?? "").trim();
+const limit = (v: FormDataEntryValue | null, max: number) => String(v ?? "").trim().slice(0, max);
+
+export async function submitRfq(_prevState: RfqFormState, formData: FormData): Promise<RfqFormState> {
+  // Spam traps: a field humans never see, and a minimum time on the form.
+  const startedAt = Number(formData.get("startedAt") ?? 0);
+  if (String(formData.get("website") ?? "") !== "" || (startedAt && Date.now() - startedAt < 2500)) {
+    return { ok: true, message: (await getTexts())["contact.form.success"] };
+  }
+
+  const name = limit(formData.get("name"), 120);
+  const company = limit(formData.get("company"), 160);
+  const email = limit(formData.get("email"), 160);
+  const whatsapp = limit(formData.get("whatsapp"), 40);
+  const serviceId = limit(formData.get("serviceId"), 80);
+  const location = limit(formData.get("location"), 160);
+  const areaEstimate = limit(formData.get("areaEstimate"), 40);
+  const targetStart = limit(formData.get("targetStart"), 60);
+  const message = limit(formData.get("message"), 4000);
 
   const errors: Record<string, string> = {};
-  if (!name) errors.name = "Nama wajib diisi.";
-  if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
-    errors.email = "Masukkan alamat email yang valid.";
-  }
-  if (!whatsapp || whatsapp.replace(/[^0-9]/g, "").length < 9) {
-    errors.whatsapp = "Masukkan nomor WhatsApp yang valid.";
-  }
-  if (!location) errors.location = "Lokasi proyek wajib diisi.";
+  if (!name) errors.name = "Tulis nama Anda.";
+  if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) errors.email = "Tulis alamat email yang valid, mis. nama@perusahaan.co.id.";
+  if (whatsapp.replace(/[^0-9]/g, "").length < 9) errors.whatsapp = "Tulis nomor WhatsApp yang aktif, minimal 9 angka.";
+  if (!location) errors.location = "Tulis kota atau kabupaten lokasi proyek.";
 
   if (Object.keys(errors).length) {
-    return { ok: false, message: "Periksa kembali isian yang ditandai di bawah.", errors };
+    return {
+      ok: false,
+      message: "Ada isian yang perlu dilengkapi.",
+      errors,
+      values: { name, company, email, whatsapp, serviceId, location, areaEstimate, targetStart, message },
+    };
   }
 
-  const services = await getServices();
+  const [services, t] = await Promise.all([getServices(), getTexts()]);
   const validService = services.some((s) => s.id === serviceId) ? serviceId : null;
 
   await createRfqEntry({
@@ -52,8 +59,5 @@ export async function submitRfq(
     message: message || null,
   });
 
-  return {
-    ok: true,
-    message: "Permintaan penawaran terkirim. Tim BBP akan membalas dalam 1 hari kerja.",
-  };
+  return { ok: true, message: t["contact.form.success"] };
 }

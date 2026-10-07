@@ -13,16 +13,14 @@
  * --color-teal-text is the one adaptive exception: small green text reads
  * fine on the light background (using the deep shade) but the same shade
  * fails contrast on a near-black background, so dark mode swaps it for a
- * brighter, non-brand tint. It is only ever used for text, never as a
- * "brand color" swatch itself.
+ * brighter, non-brand tint. It is only ever used for text.
  *
- * Neutrals (ink/bg/surface/line) aren't specified for dark contexts by the
- * guideline, so they're derived here to stay legible in both themes; the
- * literal "Teks" swatch (2.2:1 on our background) is too light to read as
- * body copy, so it's used for borders/dividers instead, where that grey
- * belongs. --color-panel-dark is intentionally fixed in both themes: a
- * deliberate dark accent panel (poster-style reversed section), not a
- * theme-following surface.
+ * The literal "Teks" swatch (2.2:1 on our background) is too light for body
+ * copy, so it's used for borders/dividers. --color-panel-dark is fixed in
+ * both themes: a deliberate dark accent panel, not a theme surface.
+ *
+ * Radius follows the guideline's "Berani" direction (4–6px): sharp,
+ * engineered corners rather than soft pills.
  */
 :root {
   --color-teal: #009049;
@@ -33,75 +31,76 @@
   --color-on-teal: #ffffff;
 
   --color-ink: #17181a;
-  --color-ink-2: #4a4a4a;
-  --color-ink-3: #6b6b6b;
+  --color-ink-2: #45474a;
+  --color-ink-3: #686b6e;
   --color-bg: #f6f4f2;
   --color-surface: #ffffff;
-  --color-surface-2: #d8d8d8;
-  --color-line: #cfcfcd;
+  --color-surface-2: #ecebe8;
+  --color-line: #d8d8d6;
   --color-line-2: #a8a8a8;
   --color-red: #c8392b;
   --color-wf-fill: #efeeec;
   --color-teal-text: #007039;
   --color-panel-dark: #0f1f17;
+  --color-panel-dark-2: #16291f;
   --color-on-panel-dark: #f6f4f2;
-  --shadow-card: 0 1px 2px rgba(23, 24, 26, 0.06), 0 8px 24px -12px rgba(23, 24, 26, 0.18);
-  --shadow-lift: 0 2px 4px rgba(23, 24, 26, 0.05), 0 22px 44px -18px rgba(0, 72, 36, 0.35);
+  --color-dirty-bg: rgba(255, 251, 209, 0.96);
+  --shadow-card: 0 1px 2px rgba(23, 24, 26, 0.05), 0 10px 28px -16px rgba(23, 24, 26, 0.22);
+  --shadow-lift: 0 2px 4px rgba(23, 24, 26, 0.05), 0 24px 48px -20px rgba(0, 72, 36, 0.32);
 
-  /* Translucent section bands: let the animated page background
-     (BackgroundMotion) show through behind full-width sections, while
-     cards inside them stay on the opaque --color-surface. */
-  --color-band: color-mix(in srgb, var(--color-surface) 58%, transparent);
-  --color-band-2: color-mix(in srgb, var(--color-surface-2) 42%, transparent);
+  /* Translucent section bands let the page background show through. */
+  --color-band: color-mix(in srgb, var(--color-surface) 62%, transparent);
+  --color-band-2: color-mix(in srgb, var(--color-surface-2) 55%, transparent);
   --bg-blob-opacity: 1;
-  --bg-grid-line: rgba(0, 112, 57, 0.07);
+  --bg-grid-line: rgba(0, 112, 57, 0.06);
 
   --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
-  --ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
 }
 
 @media (prefers-color-scheme: dark) {
   :root:not([data-theme="light"]) {
     --color-teal-soft: #103422;
-    --color-on-teal: #ffffff;
-
     --color-ink: #f1f1ef;
     --color-ink-2: #c7ccc9;
     --color-ink-3: #93a098;
     --color-bg: #0c1812;
-    --color-surface: #17241d;
-    --color-surface-2: #202e26;
-    --color-line: #3b4740;
-    --color-line-2: #515c56;
+    --color-surface: #15221b;
+    --color-surface-2: #1d2b24;
+    --color-line: #33413a;
+    --color-line-2: #4f5b55;
     --color-red: #e5675a;
     --color-wf-fill: #1c2822;
     --color-teal-text: #52b483;
-      --shadow-card: 0 1px 2px rgba(0, 0, 0, 0.4), 0 8px 24px -12px rgba(0, 0, 0, 0.6);
+    --color-panel-dark: #08120d;
+    --color-panel-dark-2: #0f1d16;
+    --color-dirty-bg: rgba(42, 40, 16, 0.96);
+    --shadow-card: 0 1px 2px rgba(0, 0, 0, 0.4), 0 10px 28px -16px rgba(0, 0, 0, 0.6);
     --shadow-lift: 0 2px 4px rgba(0, 0, 0, 0.4), 0 24px 48px -18px rgba(0, 0, 0, 0.75);
-    --bg-blob-opacity: 0.55;
-    --bg-grid-line: rgba(82, 180, 131, 0.07);
+    --bg-blob-opacity: 0.5;
+    --bg-grid-line: rgba(82, 180, 131, 0.06);
   }
 }
 
 :root[data-theme="dark"] {
   --color-teal-soft: #103422;
-  --color-on-teal: #ffffff;
-
   --color-ink: #f1f1ef;
   --color-ink-2: #c7ccc9;
   --color-ink-3: #93a098;
   --color-bg: #0c1812;
-  --color-surface: #17241d;
-  --color-surface-2: #202e26;
-  --color-line: #3b4740;
-  --color-line-2: #515c56;
+  --color-surface: #15221b;
+  --color-surface-2: #1d2b24;
+  --color-line: #33413a;
+  --color-line-2: #4f5b55;
   --color-red: #e5675a;
   --color-wf-fill: #1c2822;
   --color-teal-text: #52b483;
-  --shadow-card: 0 1px 2px rgba(0, 0, 0, 0.4), 0 8px 24px -12px rgba(0, 0, 0, 0.6);
+  --color-panel-dark: #08120d;
+  --color-panel-dark-2: #0f1d16;
+  --color-dirty-bg: rgba(42, 40, 16, 0.96);
+  --shadow-card: 0 1px 2px rgba(0, 0, 0, 0.4), 0 10px 28px -16px rgba(0, 0, 0, 0.6);
   --shadow-lift: 0 2px 4px rgba(0, 0, 0, 0.4), 0 24px 48px -18px rgba(0, 0, 0, 0.75);
-  --bg-blob-opacity: 0.55;
-  --bg-grid-line: rgba(82, 180, 131, 0.07);
+  --bg-blob-opacity: 0.5;
+  --bg-grid-line: rgba(82, 180, 131, 0.06);
 }
 
 @theme inline {
@@ -123,7 +122,12 @@
   --color-line-2: var(--color-line-2);
   --color-red: var(--color-red);
   --color-panel-dark: var(--color-panel-dark);
+  --color-panel-dark-2: var(--color-panel-dark-2);
   --color-on-panel-dark: var(--color-on-panel-dark);
+  --radius-sm: 4px;
+  --radius-md: 6px;
+  --radius-lg: 8px;
+  --radius-xl: 10px;
   /* Nexa Heavy is BBP's specified display face but is a commercial font
      with no free web-embeddable license; Poppins is used as the closest
      free geometric-sans match. Inter is the brand's own body typeface. */
@@ -134,6 +138,7 @@
 
 html {
   color-scheme: light dark;
+  scroll-padding-top: 88px;
 }
 :root[data-theme="light"] {
   color-scheme: light;
@@ -149,13 +154,17 @@ body {
   font-size: 16px;
   line-height: 1.6;
   -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
 }
 
 h1, h2, h3, h4, h5 {
   font-family: var(--font-display);
   text-wrap: balance;
-  line-height: 1.12;
-  letter-spacing: -0.01em;
+  line-height: 1.1;
+  letter-spacing: -0.015em;
+}
+p {
+  text-wrap: pretty;
 }
 
 .font-data {
@@ -163,8 +172,8 @@ h1, h2, h3, h4, h5 {
 }
 
 ::selection {
-  background: var(--color-teal);
-  color: var(--color-on-teal);
+  background: var(--color-yellow);
+  color: #17181a;
 }
 
 :focus-visible {
@@ -181,8 +190,252 @@ h1, h2, h3, h4, h5 {
   }
 }
 
-/* Leaflet: the library's own stylesheet is imported by the map client
-   component; these just re-theme a few chrome bits to match our tokens. */
+/* ================================================================
+ * Layout & type primitives
+ * ================================================================ */
+.container-x {
+  width: 100%;
+  max-width: 1200px;
+  margin-inline: auto;
+  padding-inline: 20px;
+}
+@media (min-width: 640px) {
+  .container-x {
+    padding-inline: 32px;
+  }
+}
+
+.display {
+  font-family: var(--font-display);
+  font-weight: 800;
+  font-size: clamp(2.35rem, 4.5vw, 3.9rem);
+  line-height: 1.02;
+  letter-spacing: -0.035em;
+}
+.h-page {
+  font-family: var(--font-display);
+  font-weight: 800;
+  font-size: clamp(2rem, 4vw, 3.2rem);
+  line-height: 1.05;
+  letter-spacing: -0.03em;
+}
+.h-section {
+  font-family: var(--font-display);
+  font-weight: 800;
+  font-size: clamp(1.75rem, 3.1vw, 2.6rem);
+  line-height: 1.08;
+  letter-spacing: -0.025em;
+}
+.lede {
+  font-size: 17px;
+  line-height: 1.65;
+  color: var(--color-ink-2);
+}
+@media (min-width: 640px) {
+  .lede {
+    font-size: 18px;
+  }
+}
+
+/* Mono label above headings: a short green rule, then the label. */
+.eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.65rem;
+  font-family: var(--font-data);
+  font-size: 11.5px;
+  font-weight: 500;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--color-teal-text);
+}
+.eyebrow::before {
+  content: "";
+  width: 18px;
+  height: 2px;
+  background: var(--color-teal);
+  box-shadow: 6px 0 0 var(--color-yellow);
+  margin-right: 6px;
+}
+.on-dark .eyebrow,
+.eyebrow.on-dark {
+  color: var(--color-yellow);
+}
+
+/* ================================================================
+ * Buttons
+ * ================================================================ */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.55rem;
+  border-radius: 6px;
+  font-weight: 600;
+  font-size: 15px;
+  line-height: 1;
+  padding: 15px 22px;
+  transition:
+    transform 0.25s var(--ease-out),
+    background-color 0.2s,
+    border-color 0.2s,
+    color 0.2s,
+    box-shadow 0.25s var(--ease-out);
+}
+.btn svg {
+  transition: transform 0.3s var(--ease-out);
+}
+.btn:hover svg {
+  transform: translateX(3px);
+}
+.btn:active {
+  transform: translateY(1px);
+}
+.btn-sm {
+  padding: 11px 16px;
+  font-size: 14px;
+}
+.btn-primary {
+  background: var(--color-teal);
+  color: var(--color-on-teal);
+  box-shadow: 0 1px 0 rgba(255, 255, 255, 0.15) inset, 0 10px 22px -14px rgba(0, 144, 73, 0.9);
+}
+.btn-primary:hover {
+  background: var(--color-teal-deep);
+}
+.btn-yellow {
+  background: var(--color-yellow);
+  color: #17181a;
+}
+.btn-yellow:hover {
+  background: #fff86a;
+}
+.btn-ghost {
+  border: 1px solid var(--color-line-2);
+  background: color-mix(in srgb, var(--color-surface) 70%, transparent);
+  color: var(--color-ink);
+}
+.btn-ghost:hover {
+  border-color: var(--color-ink);
+  background: var(--color-surface);
+}
+.btn-outline-light {
+  border: 1px solid rgba(255, 255, 255, 0.35);
+  color: #fff;
+}
+.btn-outline-light:hover {
+  background: rgba(255, 255, 255, 0.1);
+  border-color: rgba(255, 255, 255, 0.7);
+}
+
+.link-arrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-weight: 600;
+  color: var(--color-teal-text);
+}
+.link-arrow svg {
+  transition: transform 0.3s var(--ease-out);
+}
+.link-arrow:hover svg,
+.group:hover .link-arrow svg {
+  transform: translateX(4px);
+}
+
+/* ================================================================
+ * Cards
+ * ================================================================ */
+.card {
+  border: 1px solid var(--color-line);
+  background: var(--color-surface);
+  border-radius: 6px;
+}
+.card-lift {
+  transition:
+    transform 0.45s var(--ease-out),
+    box-shadow 0.45s var(--ease-out),
+    border-color 0.3s;
+}
+.card-lift:hover {
+  transform: translateY(-4px);
+  box-shadow: var(--shadow-lift);
+  border-color: color-mix(in srgb, var(--color-teal) 50%, var(--color-line));
+}
+
+/* ================================================================
+ * Title block — the drawing-sheet data panel used under hero photos and
+ * on project pages (BBP's signature element: every photo is a real job,
+ * labelled the way a working drawing labels its sheet).
+ * ================================================================ */
+.tblock {
+  display: grid;
+  grid-template-columns: 1fr auto auto;
+  border: 1px solid var(--tb-line, var(--color-line-2));
+  background: var(--tb-bg, var(--color-surface));
+  color: var(--tb-ink, var(--color-ink));
+  font-size: 13px;
+}
+.tblock > * {
+  padding: 9px 12px;
+  border-right: 1px solid var(--tb-line, var(--color-line-2));
+  border-bottom: 1px solid var(--tb-line, var(--color-line-2));
+  min-width: 0;
+}
+.tblock > .tb-full {
+  grid-column: 1 / -1;
+  border-right: 0;
+}
+.tblock > .tb-end {
+  border-right: 0;
+}
+.tblock > .tb-last {
+  border-bottom: 0;
+}
+.tb-label {
+  display: block;
+  font-family: var(--font-data);
+  font-size: 9.5px;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--tb-muted, var(--color-ink-3));
+  margin-bottom: 2px;
+}
+.tb-value {
+  display: block;
+  font-weight: 600;
+  line-height: 1.35;
+}
+
+/* Corner registration marks around a framed photo. */
+.reg-marks {
+  position: relative;
+}
+.reg-marks::before,
+.reg-marks::after {
+  content: "";
+  position: absolute;
+  width: 18px;
+  height: 18px;
+  pointer-events: none;
+  z-index: 2;
+}
+.reg-marks::before {
+  top: -9px;
+  left: -9px;
+  border-top: 1.5px solid var(--color-ink-3);
+  border-left: 1.5px solid var(--color-ink-3);
+}
+.reg-marks::after {
+  bottom: -9px;
+  right: -9px;
+  border-bottom: 1.5px solid var(--color-ink-3);
+  border-right: 1.5px solid var(--color-ink-3);
+}
+
+/* ================================================================
+ * Leaflet: re-theme chrome bits to match our tokens.
+ * ================================================================ */
 .leaflet-container {
   background: var(--color-surface-2);
   font-family: var(--font-body);
@@ -202,7 +455,7 @@ h1, h2, h3, h4, h5 {
 .leaflet-popup-content-wrapper {
   background: var(--color-surface);
   color: var(--color-ink);
-  border-radius: 8px;
+  border-radius: 6px;
   box-shadow: var(--shadow-card);
 }
 .leaflet-popup-tip {
@@ -210,9 +463,9 @@ h1, h2, h3, h4, h5 {
 }
 
 /* ================================================================
- * Animated page background — see components/site/background-motion.
- * Pure CSS transforms on gradient layers (no animated blur filters),
- * so it stays cheap on low-end phones.
+ * Ambient page background — a drafting-table grid with two soft brand
+ * glows drifting slowly. Static on phones (saves battery), frozen for
+ * reduced motion.
  * ================================================================ */
 .bg-motion {
   position: fixed;
@@ -226,33 +479,21 @@ h1, h2, h3, h4, h5 {
   position: absolute;
   border-radius: 9999px;
   opacity: var(--bg-blob-opacity);
-  will-change: transform;
 }
 .bg-motion__blob--green {
-  width: 62vmax;
-  height: 62vmax;
-  top: -24vmax;
-  left: -18vmax;
-  background: radial-gradient(closest-side, rgba(0, 144, 73, 0.16), rgba(0, 144, 73, 0) 70%);
-  animation: bg-drift-a 26s ease-in-out infinite alternate;
+  width: 60vmax;
+  height: 60vmax;
+  top: -26vmax;
+  left: -20vmax;
+  background: radial-gradient(closest-side, rgba(0, 144, 73, 0.12), rgba(0, 144, 73, 0) 70%);
 }
 .bg-motion__blob--yellow {
-  width: 48vmax;
-  height: 48vmax;
-  top: -14vmax;
-  right: -16vmax;
-  background: radial-gradient(closest-side, rgba(255, 240, 0, 0.22), rgba(255, 240, 0, 0) 70%);
-  animation: bg-drift-b 32s ease-in-out infinite alternate;
+  width: 44vmax;
+  height: 44vmax;
+  top: -16vmax;
+  right: -18vmax;
+  background: radial-gradient(closest-side, rgba(255, 240, 0, 0.16), rgba(255, 240, 0, 0) 70%);
 }
-.bg-motion__blob--deep {
-  width: 56vmax;
-  height: 56vmax;
-  bottom: -28vmax;
-  right: 8vmax;
-  background: radial-gradient(closest-side, rgba(0, 112, 57, 0.12), rgba(0, 112, 57, 0) 70%);
-  animation: bg-drift-c 38s ease-in-out infinite alternate;
-}
-/* Blueprint grid — a nod to construction drawings — drifting slowly. */
 .bg-motion__grid {
   position: absolute;
   inset: -80px;
@@ -260,35 +501,30 @@ h1, h2, h3, h4, h5 {
     linear-gradient(var(--bg-grid-line) 1px, transparent 1px),
     linear-gradient(90deg, var(--bg-grid-line) 1px, transparent 1px);
   background-size: 80px 80px;
-  mask-image: radial-gradient(ellipse 80% 70% at 50% 30%, #000 20%, transparent 75%);
-  animation: bg-grid-pan 40s linear infinite;
+  mask-image: radial-gradient(ellipse 85% 60% at 50% 20%, #000 15%, transparent 75%);
 }
-/* Slow-turning sun rays, echoing the yellow disc in the BBP logo. */
-.bg-motion__rays {
-  position: absolute;
-  top: -60vmax;
-  right: -60vmax;
-  width: 120vmax;
-  height: 120vmax;
-  opacity: calc(var(--bg-blob-opacity) * 0.55);
-  background: repeating-conic-gradient(from 0deg, rgba(255, 240, 0, 0.09) 0deg 4deg, transparent 4deg 16deg);
-  mask-image: radial-gradient(closest-side, #000 10%, transparent 72%);
-  animation: bg-spin 140s linear infinite;
+@media (min-width: 768px) {
+  .bg-motion__blob {
+    will-change: transform;
+  }
+  .bg-motion__blob--green {
+    animation: bg-drift-a 30s ease-in-out infinite alternate;
+  }
+  .bg-motion__blob--yellow {
+    animation: bg-drift-b 36s ease-in-out infinite alternate;
+  }
+  .bg-motion__grid {
+    animation: bg-grid-pan 60s linear infinite;
+  }
 }
 @keyframes bg-drift-a {
-  to { transform: translate3d(14vw, 10vh, 0) scale(1.12); }
+  to { transform: translate3d(12vw, 8vh, 0) scale(1.1); }
 }
 @keyframes bg-drift-b {
-  to { transform: translate3d(-12vw, 16vh, 0) scale(0.9); }
-}
-@keyframes bg-drift-c {
-  to { transform: translate3d(-18vw, -12vh, 0) scale(1.15); }
+  to { transform: translate3d(-10vw, 14vh, 0) scale(0.92); }
 }
 @keyframes bg-grid-pan {
   to { transform: translate3d(80px, 80px, 0); }
-}
-@keyframes bg-spin {
-  to { transform: rotate(360deg); }
 }
 
 /* ================================================================
@@ -297,18 +533,15 @@ h1, h2, h3, h4, h5 {
  * ================================================================ */
 .reveal {
   opacity: 0;
-  translate: 0 28px;
-  filter: blur(4px);
+  translate: 0 22px;
   transition:
-    opacity 0.8s var(--ease-out),
-    translate 0.9s var(--ease-out),
-    filter 0.8s var(--ease-out);
+    opacity 0.7s var(--ease-out),
+    translate 0.8s var(--ease-out);
   transition-delay: var(--reveal-delay, 0ms);
 }
 .reveal.is-visible {
   opacity: 1;
   translate: none;
-  filter: none;
 }
 
 /* ================================================================
@@ -318,10 +551,10 @@ h1, h2, h3, h4, h5 {
   pointer-events: none;
 }
 ::view-transition-old(.page-exit) {
-  animation: 180ms ease-in both vt-fade-out, 260ms ease-in both vt-lift-out;
+  animation: 160ms ease-in both vt-fade-out;
 }
 ::view-transition-new(.page-enter) {
-  animation: 380ms var(--ease-out) 120ms both vt-fade-in, 520ms var(--ease-out) 80ms both vt-lift-in;
+  animation: 360ms var(--ease-out) 80ms both vt-fade-in, 460ms var(--ease-out) 60ms both vt-lift-in;
 }
 ::view-transition-group(site-header) {
   animation: none;
@@ -334,20 +567,16 @@ h1, h2, h3, h4, h5 {
   animation: none;
 }
 @keyframes vt-fade-out {
-  to { opacity: 0; filter: blur(4px); }
-}
-@keyframes vt-lift-out {
-  to { transform: translateY(-18px) scale(0.99); }
+  to { opacity: 0; }
 }
 @keyframes vt-fade-in {
-  from { opacity: 0; filter: blur(6px); }
+  from { opacity: 0; }
 }
 @keyframes vt-lift-in {
-  from { transform: translateY(28px); }
+  from { transform: translateY(16px); }
 }
 
-/* Thin brand-coloured bar that sweeps across while a route is loading
-   (shown by NavProgress) and a scroll-progress line under the header. */
+/* Thin progress bar while a route loads, and scroll progress under the header. */
 .nav-progress {
   position: fixed;
   inset: 0 0 auto 0;
@@ -381,134 +610,52 @@ h1, h2, h3, h4, h5 {
 }
 
 /* ================================================================
- * Components
+ * Motion details
  * ================================================================ */
-.btn-primary,
-.btn-yellow {
-  position: relative;
-  overflow: hidden;
-  isolation: isolate;
-  transition:
-    transform 0.25s var(--ease-out),
-    box-shadow 0.25s var(--ease-out),
-    background-color 0.2s;
-}
-.btn-primary {
-  background: var(--color-teal);
-  color: var(--color-on-teal);
-  box-shadow: 0 10px 24px -12px rgba(0, 144, 73, 0.8);
-}
-.btn-primary:hover {
-  background: var(--color-teal-deep);
-}
-.btn-yellow {
-  background: var(--color-yellow);
-  color: #1c2a12;
-  box-shadow: 0 10px 28px -12px rgba(255, 240, 0, 0.6);
-}
-.btn-primary:hover,
-.btn-yellow:hover {
-  transform: translateY(-2px);
-}
-.btn-primary:active,
-.btn-yellow:active {
-  transform: translateY(0) scale(0.98);
-}
-/* light sweep on hover */
-.btn-primary::after,
-.btn-yellow::after {
-  content: "";
-  position: absolute;
-  inset: 0;
-  z-index: -1;
-  background: linear-gradient(110deg, transparent 30%, rgba(255, 255, 255, 0.35) 50%, transparent 70%);
-  translate: -120% 0;
-  transition: translate 0.7s var(--ease-out);
-}
-.btn-primary:hover::after,
-.btn-yellow:hover::after {
-  translate: 120% 0;
-}
-.btn-primary svg,
-.btn-yellow svg,
-.link-arrow svg {
-  transition: transform 0.3s var(--ease-out);
-}
-.btn-primary:hover svg,
-.btn-yellow:hover svg,
-.link-arrow:hover svg,
-.group:hover .link-arrow svg {
-  transform: translateX(4px);
-}
 
-.btn-ghost {
-  border: 1px solid var(--color-line-2);
-  background: color-mix(in srgb, var(--color-surface) 70%, transparent);
-  color: var(--color-ink);
-  backdrop-filter: blur(6px);
-  transition: border-color 0.2s, background-color 0.2s, transform 0.25s var(--ease-out);
-}
-.btn-ghost:hover {
-  border-color: var(--color-teal);
-  background: var(--color-surface);
-  transform: translateY(-2px);
-}
-
-/* Cards lift on hover with a green glow edge. */
-.card-lift {
-  transition:
-    transform 0.4s var(--ease-out),
-    box-shadow 0.4s var(--ease-out),
-    border-color 0.3s;
-}
-.card-lift:hover {
-  transform: translateY(-6px);
-  box-shadow: var(--shadow-lift);
-  border-color: color-mix(in srgb, var(--color-teal) 55%, var(--color-line));
-}
-
-/* Eyebrow label with a small animated bar before it. */
-.eyebrow {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.6rem;
-}
-.eyebrow::before {
-  content: "";
-  width: 22px;
-  height: 2px;
-  border-radius: 2px;
-  background: linear-gradient(90deg, var(--color-teal), var(--color-yellow));
-}
-
-/* Highlighter swipe under a headline word. */
+/* Highlighter swipe under the second sentence of the hero headline. */
 .mark-sweep {
-  background-image: linear-gradient(transparent 62%, rgba(255, 240, 0, 0.75) 62%, rgba(255, 240, 0, 0.75) 92%, transparent 92%);
+  background-image: linear-gradient(transparent 60%, rgba(255, 240, 0, 0.85) 60%, rgba(255, 240, 0, 0.85) 92%, transparent 92%);
   background-repeat: no-repeat;
   background-size: 0% 100%;
-  animation: mark-sweep 1.1s var(--ease-out) 0.7s forwards;
+  animation: mark-sweep 1.1s var(--ease-out) 0.6s forwards;
   -webkit-box-decoration-break: clone;
   box-decoration-break: clone;
 }
 :root[data-theme="dark"] .mark-sweep {
-  background-image: linear-gradient(transparent 62%, rgba(255, 240, 0, 0.35) 62%, rgba(255, 240, 0, 0.35) 92%, transparent 92%);
+  background-image: linear-gradient(transparent 60%, rgba(255, 240, 0, 0.32) 60%, rgba(255, 240, 0, 0.32) 92%, transparent 92%);
 }
 @media (prefers-color-scheme: dark) {
   :root:not([data-theme="light"]) .mark-sweep {
-    background-image: linear-gradient(transparent 62%, rgba(255, 240, 0, 0.35) 62%, rgba(255, 240, 0, 0.35) 92%, transparent 92%);
+    background-image: linear-gradient(transparent 60%, rgba(255, 240, 0, 0.32) 60%, rgba(255, 240, 0, 0.32) 92%, transparent 92%);
   }
 }
 @keyframes mark-sweep {
   to { background-size: 100% 100%; }
 }
 
-/* Hero entrance (runs once on load, independent of scroll). */
 .hero-in {
-  animation: hero-in 0.9s var(--ease-out) both;
+  animation: hero-in 0.8s var(--ease-out) both;
   animation-delay: var(--d, 0ms);
 }
 @keyframes hero-in {
-  from { opacity: 0; transform: translateY(24px); filter: blur(6px); }
+  from { opacity: 0; transform: translateY(22px); filter: blur(6px); }
+}
+
+/* Hero (original design, kept): slow photo drift, turning ring, floating
+   badges, and pill buttons that lift with a light sweep on hover. */
+.ken-burns {
+  animation: ken-burns 24s ease-in-out infinite alternate;
+}
+@keyframes ken-burns {
+  from { transform: scale(1.02); }
+  to { transform: scale(1.12) translate(-1.5%, -1%); }
+}
+.spin-slow {
+  animation: spin-slow 60s linear infinite;
+}
+@keyframes spin-slow {
+  to { transform: rotate(360deg); }
 }
 .float-y {
   animation: float-y 6s ease-in-out infinite;
@@ -519,16 +666,49 @@ h1, h2, h3, h4, h5 {
 @keyframes float-y {
   50% { transform: translateY(-10px); }
 }
-.ken-burns {
-  animation: ken-burns 24s ease-in-out infinite alternate;
+.fx-lift {
+  transition:
+    transform 0.25s var(--ease-out),
+    box-shadow 0.25s var(--ease-out),
+    background-color 0.2s,
+    border-color 0.2s;
 }
-@keyframes ken-burns {
-  from { transform: scale(1.02); }
-  to { transform: scale(1.12) translate(-1.5%, -1%); }
+.fx-lift:hover {
+  transform: translateY(-2px);
 }
-.spin-slow {
-  animation: bg-spin 60s linear infinite;
+.fx-lift:active {
+  transform: translateY(0) scale(0.98);
 }
+.fx-lift svg {
+  transition: transform 0.3s var(--ease-out);
+}
+.fx-lift:hover svg {
+  transform: translateX(4px);
+}
+.btn-ghost.fx-lift {
+  backdrop-filter: blur(6px);
+}
+.btn-ghost.fx-lift:hover {
+  border-color: var(--color-teal);
+}
+.fx-sweep {
+  position: relative;
+  overflow: hidden;
+  isolation: isolate;
+}
+.fx-sweep::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background: linear-gradient(110deg, transparent 30%, rgba(255, 255, 255, 0.35) 50%, transparent 70%);
+  translate: -120% 0;
+  transition: translate 0.7s var(--ease-out);
+}
+.fx-sweep:hover::after {
+  translate: 120% 0;
+}
+
 .pulse-dot {
   position: relative;
 }
@@ -538,7 +718,7 @@ h1, h2, h3, h4, h5 {
   inset: -4px;
   border-radius: 9999px;
   border: 2px solid currentColor;
-  animation: pulse-ring 2s var(--ease-out) infinite;
+  animation: pulse-ring 2.2s var(--ease-out) infinite;
 }
 @keyframes pulse-ring {
   from { opacity: 0.8; transform: scale(0.6); }
@@ -547,12 +727,12 @@ h1, h2, h3, h4, h5 {
 
 /* Infinite client marquee. The list is rendered twice; -50% loops it. */
 .marquee {
-  mask-image: linear-gradient(90deg, transparent, #000 10%, #000 90%, transparent);
+  mask-image: linear-gradient(90deg, transparent, #000 8%, #000 92%, transparent);
 }
 .marquee__track {
   display: flex;
   width: max-content;
-  animation: marquee 40s linear infinite;
+  animation: marquee 45s linear infinite;
 }
 .marquee:hover .marquee__track {
   animation-play-state: paused;
@@ -570,9 +750,8 @@ h1, h2, h3, h4, h5 {
   position: absolute;
   left: 12px;
   right: 12px;
-  bottom: 4px;
+  bottom: 3px;
   height: 2px;
-  border-radius: 2px;
   background: var(--color-teal);
   transform: scaleX(0);
   transform-origin: right;
@@ -585,23 +764,30 @@ h1, h2, h3, h4, h5 {
 }
 
 .menu-item-in {
-  animation: hero-in 0.5s var(--ease-out) both;
+  animation: hero-in 0.45s var(--ease-out) both;
   animation-delay: var(--d, 0ms);
+}
+
+/* Process steps: a dimension line joining the step markers. */
+.process-line {
+  background-image: linear-gradient(90deg, var(--color-line-2) 50%, transparent 50%);
+  background-size: 10px 1px;
+  background-repeat: repeat-x;
+  background-position: center;
 }
 
 @media (prefers-reduced-motion: reduce) {
   .bg-motion *,
   .marquee__track,
   .ken-burns,
+  .spin-slow,
   .float-y,
-  .float-y-slow,
-  .spin-slow {
+  .float-y-slow {
     animation: none !important;
   }
   .reveal {
     opacity: 1;
     translate: none;
-    filter: none;
   }
   .mark-sweep {
     background-size: 100% 100%;
@@ -612,6 +798,14 @@ h1, h2, h3, h4, h5 {
     animation-duration: 0s !important;
     animation-delay: 0s !important;
   }
+}
+
+/* Lightbox */
+.lightbox-backdrop {
+  animation: lb-fade 0.25s ease both;
+}
+@keyframes lb-fade {
+  from { opacity: 0; }
 }
 
 @keyframes footer-bar {

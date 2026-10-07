@@ -1,20 +1,17 @@
 "use client";
 
 import dynamic from "next/dynamic";
+import { LazyMount, MapPlaceholder } from "./lazy-mount";
 
 const Map = dynamic(() => import("./location-map").then((m) => m.LocationMap), {
   ssr: false,
-  loading: () => (
-    <div
-      className="h-full w-full animate-pulse rounded-md border border-[var(--color-line)]"
-      style={{
-        backgroundImage:
-          "repeating-linear-gradient(135deg, var(--color-wf-fill) 0 10px, var(--color-line) 10px 11px)",
-      }}
-    />
-  ),
+  loading: () => <MapPlaceholder label="" />,
 });
 
-export function LocationMapClient({ lat, lng }: { lat: number; lng: number }) {
-  return <Map lat={lat} lng={lng} />;
+export function LocationMapClient({ lat, lng, zoom }: { lat: number; lng: number; zoom?: number }) {
+  return (
+    <LazyMount className="h-full w-full" placeholder={<MapPlaceholder label="" />}>
+      <Map lat={lat} lng={lng} zoom={zoom} />
+    </LazyMount>
+  );
 }
