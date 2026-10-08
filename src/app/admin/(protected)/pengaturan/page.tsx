@@ -1,6 +1,7 @@
 import { getAllProjects, getCategories, getMedia, getSettings } from "@/lib/repo";
 import { mediaFor } from "@/lib/media";
 import { countCities, yearsSince } from "@/lib/site";
+import { emailConfigured } from "@/lib/notify";
 import { SettingsForm } from "@/components/admin/settings-form";
 import { PageHeader } from "@/components/admin/ui";
 
@@ -22,6 +23,7 @@ export default async function AdminPengaturanPage() {
         categories={categories}
         categoryUsage={usage}
         computed={{ years: yearsSince(settings.established, settings.stats.yearsActive), cities: countCities(projects.filter((p) => !p.hidden)) }}
+        emailConfigured={emailConfigured}
       />
     </div>
   );

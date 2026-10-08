@@ -36,17 +36,26 @@ Semua isi website bisa diubah tanpa menyentuh kode:
 | Menu | Isi |
 |---|---|
 | **Ringkasan** | Angka penting, daftar "perlu perhatian" (sertifikat hampir habis, proyek tanpa foto/titik peta), penawaran terbaru, panduan singkat |
-| **Halaman Website** | Editor per halaman (Beranda, Tentang, Layanan, Proyek, Kapasitas, Legalitas, Klien, Hubungi, Header & Footer). Tiap bagian (*section*) bisa diubah tulisan & fotonya, disembunyikan, atau diurutkan ulang; daftar (rekam jejak, alasan, alur kerja, layanan, tim, peralatan) diedit per baris. SEO per halaman. Pratinjau langsung desktop/HP di kanan |
-| **Proyek** | Cari/filter, tandai unggulan & sembunyikan sekali klik, atur urutan (seret), duplikat. Editor: foto (urutkan, jadikan sampul), lokasi di peta (cari atau klik), kategori, luas & durasi |
+| **Halaman Website** | Editor per halaman (Beranda, Tentang, Layanan, Proyek, Kapasitas, Legalitas, Klien, Hubungi, K3 & Mutu, Karier, Header & Footer). Termasuk video YouTube/Vimeo, testimoni klien, dan lowongan kerja; halaman K3 & Karier bisa dimatikan seluruhnya. Tiap bagian (*section*) bisa diubah tulisan & fotonya, disembunyikan, atau diurutkan ulang; daftar (rekam jejak, alasan, alur kerja, layanan, tim, peralatan) diedit per baris. SEO per halaman. Pratinjau langsung desktop/HP di kanan |
+| **Proyek** | Cari/filter, tandai unggulan & sembunyikan sekali klik, atur urutan (seret), duplikat. Editor: foto (urutkan, jadikan sampul), lokasi di peta (cari atau klik), kategori, luas & durasi, fakta tambahan (mis. tonase baja), video |
 | **Klien** | Logo, klien utama, situs web, urutan tampil |
 | **Sertifikat & Legalitas** | Tambah/ubah/hapus dokumen, tanggal berlaku (status otomatis kedaluwarsa + pengingat 60 hari), unggah PDF |
 | **Galeri Foto** | Semua foto & PDF di satu tempat, unggah massal, lihat dipakai di mana, hapus yang tidak dipakai |
-| **Inbox Penawaran** | Permintaan dari formulir Hubungi Kami: status tindak lanjut, catatan internal, balas WhatsApp/email sekali klik, unduh CSV |
-| **Info Perusahaan** | Identitas, kontak + titik kantor di peta, pesan awal WhatsApp, media sosial, direktur + foto, nomor legal, ISO & SMK3, angka statistik, kategori proyek |
+| **Inbox Penawaran** | Permintaan dari formulir Hubungi Kami dan pengunduh company profile: status tindak lanjut, catatan internal, balas WhatsApp/email sekali klik, unduh CSV |
+| **Info Perusahaan** | Identitas, kontak + titik kantor di peta, pesan awal WhatsApp, media sosial, notifikasi email, PDF company profile, Google Analytics & Search Console, direktur + foto, nomor legal, ISO & SMK3, angka statistik, kategori proyek |
 | **Akun Admin** | Ganti kata sandi; tambah akun dengan peran Admin / Editor / Hanya lihat |
 | **Cadangan Data** | Unduh seluruh konten jadi satu file JSON, dan pulihkan dari file itu |
 
 Foto yang diunggah dikompres di browser (maks. 2400 px, WebP) sebelum dikirim, jadi foto HP 5–10 MB menjadi ±300–600 KB.
+
+## Notifikasi email
+
+Permintaan penawaran dan unduhan company profile bisa dikirim ke email lewat [Resend](https://resend.com) (gratis hingga 3.000 email/bulan). Pasang di Vercel → Settings → Environment Variables:
+
+- `RESEND_API_KEY` — API key dari Resend (wajib untuk mengaktifkan).
+- `RESEND_FROM` — opsional, mis. `Website BBP <website@binabangunperkasa.co.id>` setelah domain diverifikasi di Resend. Tanpa ini, pengirim bawaan Resend hanya bisa mengirim ke email pemilik akun Resend.
+
+Alamat tujuan diatur di admin (Info Perusahaan → Notifikasi email), lengkap dengan tombol "Kirim email uji". Tanpa key, permintaan tetap tersimpan di Inbox.
 
 ## Penyimpanan data
 

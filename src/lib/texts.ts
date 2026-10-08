@@ -81,6 +81,14 @@ export const TEXT_FIELDS = [
   { key: "home.featured.title", page: "beranda", section: "featured", label: "Judul", default: "Sebagian pekerjaan yang telah kami selesaikan" },
   { key: "home.featured.link", page: "beranda", section: "featured", label: "Teks tautan", default: "Semua proyek →" },
 
+  { key: "home.video.url", page: "beranda", section: "video", label: "Link video YouTube atau Vimeo", default: "", hint: "Unggah video ke YouTube (boleh status Unlisted / Tidak publik), lalu tempel link-nya di sini. Kosongkan untuk menyembunyikan bagian ini." },
+  { key: "home.video.eyebrow", page: "beranda", section: "video", label: "Label kecil", default: "Di Lapangan" },
+  { key: "home.video.title", page: "beranda", section: "video", label: "Judul", default: "Lihat cara BBP bekerja" },
+  { key: "home.video.body", page: "beranda", section: "video", label: "Paragraf (opsional)", default: "", multiline: true },
+
+  { key: "home.testimonials.eyebrow", page: "beranda", section: "testimonials", label: "Label kecil", default: "Kata Klien" },
+  { key: "home.testimonials.title", page: "beranda", section: "testimonials", label: "Judul", default: "Dipercaya untuk proyek berikutnya" },
+
   { key: "home.process.eyebrow", page: "beranda", section: "process", label: "Label kecil", default: "Alur Kerja" },
   { key: "home.process.title", page: "beranda", section: "process", label: "Judul", default: "Dari survei lokasi sampai serah terima" },
   { key: "home.process.items", page: "beranda", section: "process", label: "Langkah kerja (berurutan)", columns: [
@@ -145,6 +153,7 @@ export const TEXT_FIELDS = [
   { key: "project.cta.title", page: "proyek", section: "detail", label: "Ajakan di bawah deskripsi", default: "Butuh pekerjaan {kategori} seperti ini?", vars: ["kategori"] },
   { key: "project.cta.button", page: "proyek", section: "detail", label: "Tombol ajakan", default: "Kirim Rencana Proyek Anda" },
   { key: "project.related", page: "proyek", section: "detail", label: "Judul proyek serupa", default: "Proyek serupa" },
+  { key: "project.video", page: "proyek", section: "detail", label: "Judul video proyek", default: "Video proyek" },
 
   /* ---------------- Kapasitas ---------------- */
   { key: "capacity.eyebrow", page: "kapasitas", section: "intro", label: "Label kecil", default: "Kapasitas & Alat" },
@@ -185,6 +194,7 @@ export const TEXT_FIELDS = [
   { key: "clients.intro", page: "klien", section: "intro", label: "Paragraf", multiline: true, default: "Klien korporat besar jarang mengulang kontraktor yang mengecewakan. Sebagian besar klien BBP kembali untuk proyek berikutnya, di kota yang berbeda." },
   { key: "clients.flagship.label", page: "klien", section: "flagship", label: "Label kecil", default: "Klien utama · sejak {tahun}", vars: ["tahun"] },
   { key: "clients.flagship.link", page: "klien", section: "flagship", label: "Tautan ke proyek", default: "Lihat proyek untuk {klien}", vars: ["klien"] },
+  { key: "clients.testimonials.title", page: "klien", section: "testimonials", label: "Judul", default: "Kata klien tentang BBP" },
   { key: "clients.others", page: "klien", section: "others", label: "Judul kelompok", default: "Klien Lainnya" },
 
   /* ---------------- Hubungi ---------------- */
@@ -200,6 +210,44 @@ export const TEXT_FIELDS = [
   { key: "contact.maps", page: "hubungi", section: "office", label: "Tautan peta", default: "Buka di Google Maps" },
   { key: "contact.legalNote", page: "hubungi", section: "office", label: "Kalimat sebelum tautan legalitas", default: "Untuk vendor registration atau permintaan dokumen legal, lihat halaman" },
 
+  /* ---------------- K3 & Mutu ---------------- */
+  { key: "k3.eyebrow", page: "k3", section: "intro", label: "Label kecil", default: "K3 & Mutu" },
+  { key: "k3.title", page: "k3", section: "intro", label: "Judul", default: "Keselamatan dan mutu dijaga di setiap proyek" },
+  { key: "k3.intro", page: "k3", section: "intro", label: "Paragraf", multiline: true, vars: ["regulasiSmk3", "iso"], default: "BBP menerapkan Sistem Manajemen K3 (SMK3) sesuai {regulasiSmk3} dan sistem manajemen mutu {iso}, agar pekerjaan di lokasi klien berjalan aman, tertib, dan terdokumentasi." },
+  { key: "k3.stats.score", page: "k3", section: "stats", label: "Keterangan angka: skor SMK3", default: "skor audit SMK3" },
+  { key: "k3.stats.criteria", page: "k3", section: "stats", label: "Keterangan angka: kriteria", default: "kriteria SMK3 terpenuhi" },
+  { key: "k3.stats.category", page: "k3", section: "stats", label: "Keterangan: kategori", default: "kategori penilaian" },
+  { key: "k3.stats.iso", page: "k3", section: "stats", label: "Keterangan: sistem mutu", default: "sistem manajemen mutu" },
+  { key: "k3.program.eyebrow", page: "k3", section: "program", label: "Label kecil", default: "Penerapan SMK3" },
+  { key: "k3.program.title", page: "k3", section: "program", label: "Judul", default: "Lima prinsip SMK3 yang dijalankan" },
+  { key: "k3.program.items", page: "k3", section: "program", label: "Daftar prinsip", columns: [
+    { key: "title", label: "Prinsip" },
+    { key: "text", label: "Penjelasan", kind: "textarea" },
+  ], default: [
+    "Kebijakan K3 | Komitmen manajemen terhadap keselamatan dan kesehatan kerja ditetapkan tertulis dan disosialisasikan kepada seluruh pekerja.",
+    "Perencanaan K3 | Bahaya diidentifikasi dan risikonya dinilai sebelum pekerjaan dimulai, lengkap dengan langkah pengendaliannya.",
+    "Pelaksanaan di lapangan | Rencana K3 diterapkan di setiap proyek, termasuk penggunaan alat pelindung diri dan pengawasan oleh HSE Coordinator.",
+    "Pemantauan & evaluasi | Inspeksi dan pemeriksaan dilakukan berkala untuk memastikan prosedur K3 benar-benar dijalankan.",
+    "Peninjauan & peningkatan | Hasil evaluasi ditinjau manajemen sebagai dasar perbaikan berkelanjutan.",
+  ].join("\n") },
+  { key: "k3.quality.title", page: "k3", section: "quality", label: "Judul", default: "Sistem manajemen mutu {iso}", vars: ["iso"] },
+  { key: "k3.quality.body", page: "k3", section: "quality", label: "Isi", multiline: true, vars: ["iso", "penerbitIso", "lingkupIso"], default: "Bersertifikat {iso} dari {penerbitIso} untuk lingkup: {lingkupIso}" },
+  { key: "k3.gallery.title", page: "k3", section: "gallery", label: "Judul", default: "Dokumentasi K3 di lapangan" },
+  { key: "k3.cta.text", page: "k3", section: "cta", label: "Kalimat", default: "Butuh dokumen SMK3 atau ISO untuk vendor registration?" },
+  { key: "k3.cta.button", page: "k3", section: "cta", label: "Tombol", default: "Lihat dokumen legalitas" },
+
+  /* ---------------- Karier ---------------- */
+  { key: "careers.eyebrow", page: "karier", section: "intro", label: "Label kecil", default: "Karier" },
+  { key: "careers.title", page: "karier", section: "intro", label: "Judul", default: "Bangun karier bersama BBP" },
+  { key: "careers.intro", page: "karier", section: "intro", label: "Paragraf", multiline: true, default: "Kami membuka kesempatan bagi tenaga lapangan dan kantor untuk bergabung dalam proyek konstruksi BBP di berbagai kota." },
+  { key: "careers.empty", page: "karier", section: "openings", label: "Pesan jika belum ada lowongan", multiline: true, default: "Saat ini belum ada lowongan terbuka. Anda tetap bisa mengirim CV — kami simpan untuk kebutuhan berikutnya." },
+  { key: "careers.requirements", page: "karier", section: "openings", label: "Judul daftar kualifikasi", default: "Kualifikasi" },
+  { key: "careers.deadline", page: "karier", section: "openings", label: "Label batas lamaran", default: "Batas lamaran" },
+  { key: "careers.apply.email", page: "karier", section: "openings", label: "Tombol lamar email", default: "Lamar via email" },
+  { key: "careers.apply.whatsapp", page: "karier", section: "openings", label: "Tombol tanya WhatsApp", default: "Tanya via WhatsApp" },
+  { key: "careers.how.title", page: "karier", section: "how", label: "Judul", default: "Cara melamar" },
+  { key: "careers.how.body", page: "karier", section: "how", label: "Isi", multiline: true, vars: ["email"], default: "Kirim CV, ijazah terakhir, dan sertifikat keahlian (jika ada) ke {email} dengan subjek nama posisi yang dilamar. Kandidat yang sesuai akan kami hubungi untuk wawancara." },
+
   /* ---------------- Header & footer ---------------- */
   { key: "common.headerCta", page: "umum", section: "header", label: "Tombol di header", default: "Minta Penawaran" },
   { key: "common.nav.tentang", page: "umum", section: "header", label: "Menu: Tentang", default: "Tentang" },
@@ -208,10 +256,17 @@ export const TEXT_FIELDS = [
   { key: "common.nav.kapasitas", page: "umum", section: "header", label: "Menu: Kapasitas", default: "Kapasitas" },
   { key: "common.nav.legalitas", page: "umum", section: "header", label: "Menu: Legalitas", default: "Legalitas" },
   { key: "common.nav.klien", page: "umum", section: "header", label: "Menu: Klien", default: "Klien" },
+  { key: "common.nav.k3", page: "umum", section: "footer", label: "Tautan footer: K3 & Mutu", default: "K3 & Mutu" },
+  { key: "common.nav.karier", page: "umum", section: "footer", label: "Tautan footer: Karier", default: "Karier" },
   { key: "common.footer.about", page: "umum", section: "footer", label: "Paragraf di bawah logo", multiline: true, vars: ["taglinePanjang", "tanggalBerdiri"], default: "{taglinePanjang}. Berdiri sejak {tanggalBerdiri}, mengerjakan struktur beton, fabrikasi baja, MEP, dan sipil di seluruh Indonesia." },
   { key: "common.footer.memberships", page: "umum", section: "footer", label: "Keanggotaan & sertifikasi", default: "Anggota GAPENSI · Bersertifikat ISO 9001 & SMK3" },
   { key: "common.footer.copyright", page: "umum", section: "footer", label: "Hak cipta", default: "© {tahun} {namaPerusahaan}. Seluruh hak cipta dilindungi.", vars: ["tahun", "namaPerusahaan"] },
   { key: "common.wa.label", page: "umum", section: "whatsapp", label: "Teks tombol (muncul saat diarahkan)", default: "Chat dengan BBP" },
+  { key: "common.profile.button", page: "umum", section: "download", label: "Tombol unduh", default: "Unduh Company Profile" },
+  { key: "common.profile.title", page: "umum", section: "download", label: "Judul jendela unduh", default: "Unduh company profile BBP" },
+  { key: "common.profile.body", page: "umum", section: "download", label: "Keterangan", multiline: true, default: "Isi data singkat berikut, lalu file PDF langsung bisa diunduh." },
+  { key: "common.profile.submit", page: "umum", section: "download", label: "Tombol kirim", default: "Unduh PDF" },
+  { key: "common.profile.done", page: "umum", section: "download", label: "Pesan setelah isi data", default: "Terima kasih. Company profile siap diunduh." },
   { key: "common.notfound.title", page: "umum", section: "notfound", label: "Judul", default: "Halaman tidak ditemukan" },
   { key: "common.notfound.body", page: "umum", section: "notfound", label: "Paragraf", multiline: true, default: "Tautan yang Anda buka mungkin sudah dipindah atau salah ketik. Coba mulai dari beranda atau lihat daftar proyek kami." },
 
@@ -232,6 +287,10 @@ export const TEXT_FIELDS = [
   { key: "seo.klien.description", page: "klien", section: "seo", label: "Deskripsi di hasil Google", multiline: true, default: "Klien PT. Bina Bangun Perkasa, termasuk PT Gudang Garam Tbk sejak 2012, instansi pemerintah, dan perusahaan industri dari Jawa hingga Batam." },
   { key: "seo.hubungi.title", page: "hubungi", section: "seo", label: "Judul di Google & tab browser", default: "Hubungi Kami" },
   { key: "seo.hubungi.description", page: "hubungi", section: "seo", label: "Deskripsi di hasil Google", multiline: true, default: "Kirim rencana proyek atau minta penawaran ke PT. Bina Bangun Perkasa, Kediri. Tim membalas dalam 1 hari kerja." },
+  { key: "seo.k3.title", page: "k3", section: "seo", label: "Judul di Google & tab browser", default: "K3 & Mutu" },
+  { key: "seo.k3.description", page: "k3", section: "seo", label: "Deskripsi di hasil Google", multiline: true, default: "Penerapan SMK3 dan sistem manajemen mutu ISO 9001 di proyek-proyek PT. Bina Bangun Perkasa." },
+  { key: "seo.karier.title", page: "karier", section: "seo", label: "Judul di Google & tab browser", default: "Karier" },
+  { key: "seo.karier.description", page: "karier", section: "seo", label: "Deskripsi di hasil Google", multiline: true, default: "Lowongan kerja di PT. Bina Bangun Perkasa, kontraktor umum di Kediri, Jawa Timur." },
 ] as const satisfies readonly TextField[];
 
 export type TextKey = (typeof TEXT_FIELDS)[number]["key"];

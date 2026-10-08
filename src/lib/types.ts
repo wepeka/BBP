@@ -24,6 +24,10 @@ export interface Project {
   /** Optional facts shown in the project's data sheet. */
   area?: string | null;
   duration?: string | null;
+  /** Extra data-sheet rows, e.g. { label: "Tonase baja", value: "320 ton" }. */
+  facts?: { label: string; value: string }[];
+  /** YouTube/Vimeo link shown under the gallery. */
+  videoUrl?: string | null;
 }
 
 export interface Client {
@@ -157,13 +161,27 @@ export interface Settings {
   social: SocialLinks;
   /** Pre-filled text when a visitor taps a WhatsApp button. */
   whatsappMessage: string;
+  /** Where new RFQ / download notifications are emailed (comma-separated). */
+  notifyEmail: string;
+  /** Company profile PDF offered for download (after leaving contact details). */
+  companyProfilePdf: string | null;
+  /** Google Analytics 4 measurement ID (G-…). */
+  analyticsId: string;
+  /** Google Search Console HTML-tag verification code. */
+  googleVerification: string;
+  /** Optional pages switched off by the admin (e.g. "k3", "karier"). */
+  hiddenPages: string[];
 }
 
 export type RfqStatus = "baru" | "dihubungi" | "penawaran" | "menang" | "kalah";
 
+export type RfqType = "penawaran" | "unduhan";
+
 export interface RfqEntry {
   id: string;
   createdAt: string;
+  /** "unduhan" = left details to download the company profile. */
+  type?: RfqType;
   name: string;
   company: string | null;
   email: string;
@@ -203,3 +221,24 @@ export interface PageLayout {
 }
 
 export type LayoutMap = Record<string, PageLayout>;
+
+export interface Testimonial {
+  id: string;
+  quote: string;
+  name: string;
+  role: string;
+  company: string;
+  photo?: string | null;
+  hidden?: boolean;
+}
+
+export interface Job {
+  id: string;
+  title: string;
+  location: string;
+  type: string;
+  summary: string;
+  requirements: string[];
+  deadline?: string | null;
+  hidden?: boolean;
+}

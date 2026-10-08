@@ -10,6 +10,7 @@ import {
   getProjects,
   getServices,
   getSettings,
+  getTestimonials,
   getTexts,
 } from "@/lib/repo";
 import { fill, parseList } from "@/lib/texts";
@@ -24,6 +25,10 @@ import { ProjectsMapClient } from "@/components/site/projects-map-loader";
 import { CountUp } from "@/components/site/count-up";
 import { HeroPhoto } from "@/components/site/hero-photo";
 import { SectionHeading } from "@/components/site/section-heading";
+import { VideoEmbed } from "@/components/site/video-embed";
+import { Testimonials } from "@/components/site/testimonials";
+import { CompanyProfileButton } from "@/components/site/company-profile-button";
+import { parseVideoUrl } from "@/lib/video";
 
 export async function generateMetadata(): Promise<Metadata> {
   const [settings, t] = await Promise.all([getSettings(), getTexts()]);
@@ -36,7 +41,7 @@ export async function generateMetadata(): Promise<Metadata> {
 }
 
 export default async function HomePage() {
-  const [settings, services, clients, projects, categories, t, media, layout] = await Promise.all([
+  const [settings, services, clients, projects, categories, t, media, layout, testimonials] = await Promise.all([
     getSettings(),
     getServices(),
     getClients(),
@@ -45,6 +50,7 @@ export default async function HomePage() {
     getTexts(),
     getMedia(),
     getLayout(),
+    getTestimonials(),
   ]);
 
   const vars = statVars(settings, projects);
@@ -333,6 +339,31 @@ export default async function HomePage() {
       );
     },
 
+    video: () => {
+      const video = parseVideoUrl(t["home.video.url"]);
+      if (!video) return null;
+      return (
+        <section id="sec-video" key="video" className="border-y border-[var(--color-line)] bg-[var(--color-band-2)] py-20 sm:py-24">
+          <div className="container-x grid gap-10 lg:grid-cols-[0.75fr_1.25fr] lg:items-center">
+            <SectionHeading eyebrow={t["home.video.eyebrow"]} title={t["home.video.title"]} intro={t["home.video.body"] || undefined} />
+            <div data-no-reveal>
+              <VideoEmbed video={video} title={t["home.video.title"]} poster={firstMedia(media, "home.video.poster")?.src} />
+            </div>
+          </div>
+        </section>
+      );
+    },
+
+    testimonials: () =>
+      testimonials.length ? (
+        <section id="sec-testimonials" key="testimonials" className="container-x py-20 sm:py-28">
+          <SectionHeading eyebrow={t["home.testimonials.eyebrow"]} title={t["home.testimonials.title"]} />
+          <div className="mt-12">
+            <Testimonials items={testimonials} />
+          </div>
+        </section>
+      ) : null,
+
     process: () => {
       const steps = parseList(t["home.process.items"]);
       return (
@@ -409,6 +440,15 @@ export default async function HomePage() {
                 <a href={waLink(settings.whatsapp, settings.whatsappMessage)} target="_blank" rel="noopener noreferrer" className="btn btn-outline-light">
                   {t["home.cta.whatsapp"]}
                 </a>
+                {settings.companyProfilePdf && (
+                  <CompanyProfileButton
+                    variant="light"
+                    label={t["common.profile.button"]}
+                    title={t["common.profile.title"]}
+                    body={t["common.profile.body"]}
+                    submitLabel={t["common.profile.submit"]}
+                  />
+                )}
               </div>
             </div>
           </div>

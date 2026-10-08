@@ -3,17 +3,21 @@
 import { revalidatePath } from "next/cache";
 import { requireEditor } from "@/lib/auth";
 import {
+  getSettings,
   replaceEquipment,
+  replaceJobs,
   replaceServices,
   replaceTeam,
+  replaceTestimonials,
   updateLayout,
   updateMedia,
+  updateSettings,
   updateTexts,
 } from "@/lib/repo";
 import { TEXT_FIELDS, type TextKey } from "@/lib/texts";
 import { MEDIA_SLOTS } from "@/lib/media";
 import { getPageDef } from "@/lib/sections";
-import type { Equipment, MediaItem, Service } from "@/lib/types";
+import type { Equipment, Job, MediaItem, Service, Testimonial } from "@/lib/types";
 
 export interface PagePayload {
   texts: Record<string, string>;
@@ -22,6 +26,10 @@ export interface PagePayload {
   services?: Omit<Service, "order">[];
   team?: { id?: string; name: string; role: string; photo?: string | null }[];
   equipment?: Equipment[];
+  testimonials?: Testimonial[];
+  jobs?: Job[];
+  /** Optional pages only: false switches the whole page off. */
+  pageVisible?: boolean;
 }
 
 export type ActionResult = { ok: true } | { ok: false, error: string };
@@ -84,6 +92,44 @@ export async function savePageAction(pageId: string, payload: PagePayload): Prom
             image: e.image || null,
           }))
       );
+    }
+
+    if (pageId === "beranda" && payload.testimonials) {
+      await replaceTestimonials(
+        payload.testimonials
+          .filter((t) => clean(t.quote) && clean(t.name))
+          .map((t) => ({
+            id: t.id,
+            quote: clean(t.quote),
+            name: clean(t.name),
+            role: clean(t.role),
+            company: clean(t.company),
+            photo: t.photo || null,
+            hidden: Boolean(t.hidden),
+          }))
+      );
+    }
+    if (pageId === "karier" && payload.jobs) {
+      await replaceJobs(
+        payload.jobs
+          .filter((j) => clean(j.title))
+          .map((j) => ({
+            id: j.id,
+            title: clean(j.title),
+            location: clean(j.location),
+            type: clean(j.type),
+            summary: clean(j.summary),
+            requirements: (j.requirements ?? []).map(clean).filter(Boolean),
+            deadline: /^\d{4}-\d{2}-\d{2}$/.test(clean(j.deadline)) ? clean(j.deadline) : null,
+            hidden: Boolean(j.hidden),
+          }))
+      );
+    }
+    if (page.optional && typeof payload.pageVisible === "boolean") {
+      const hidden = new Set((await getSettings()).hiddenPages);
+      if (payload.pageVisible) hidden.delete(pageId);
+      else hidden.add(pageId);
+      await updateSettings({ hiddenPages: Array.from(hidden) });
     }
 
     revalidatePath("/", "layout");

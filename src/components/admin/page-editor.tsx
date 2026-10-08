@@ -18,15 +18,23 @@ import {
   Search,
   ArrowUpRight,
 } from "lucide-react";
-import type { Category, Equipment, MediaItem } from "@/lib/types";
+import type { Category, Equipment, Job, MediaItem, Testimonial } from "@/lib/types";
 import type { SectionDef } from "@/lib/sections";
 import { parseList, serializeList, sameList, type ListColumn } from "@/lib/texts";
 import { savePageAction, type PagePayload } from "@/app/admin/(protected)/halaman/actions";
 import { useAdmin } from "./admin-context";
-import { AutoTextarea, SaveBar, useEditorGuards } from "./controls";
+import { AutoTextarea, SaveBar, Toggle, useEditorGuards } from "./controls";
 import { ImageField, type ProjectOption } from "./image-field";
 import { ListEditor } from "./list-editor";
-import { EquipmentEditor, ServicesEditor, TeamEditor, type ServiceDraft, type TeamDraft } from "./collection-editors";
+import {
+  EquipmentEditor,
+  JobsEditor,
+  ServicesEditor,
+  TeamEditor,
+  TestimonialsEditor,
+  type ServiceDraft,
+  type TeamDraft,
+} from "./collection-editors";
 import { Badge, FieldShell, buttonClass, inputClass } from "./ui";
 
 export interface EditorField {
@@ -58,12 +66,17 @@ export interface EditorDraft {
   services?: ServiceDraft[];
   team?: TeamDraft[];
   equipment?: Equipment[];
+  testimonials?: Testimonial[];
+  jobs?: Job[];
+  pageVisible?: boolean;
 }
 
-const COLLECTION_FOR: Record<string, "services" | "team" | "equipment"> = {
+const COLLECTION_FOR: Record<string, "services" | "team" | "equipment" | "testimonials" | "jobs"> = {
   "layanan.list": "services",
   "tentang.team": "team",
   "kapasitas.equipment": "equipment",
+  "beranda.testimonials": "testimonials",
+  "karier.openings": "jobs",
 };
 
 const SEO_SECTION: SectionDef = { id: "seo", label: "SEO — tampilan di Google", description: "Judul tab browser dan deskripsi di hasil pencarian.", fixed: true };
@@ -124,6 +137,9 @@ export function PageEditor({
         services: draft.services,
         team: draft.team,
         equipment: draft.equipment,
+        testimonials: draft.testimonials,
+        jobs: draft.jobs,
+        pageVisible: draft.pageVisible,
       };
       const res = await savePageAction(pageId, payload);
       if (!res.ok) {
@@ -211,6 +227,20 @@ export function PageEditor({
 
       <div className="grid gap-6 xl:grid-cols-[minmax(0,1fr)_minmax(0,0.85fr)] xl:items-start">
         <div className="min-w-0">
+          {typeof draft.pageVisible === "boolean" && (
+            <div
+              className={`mb-4 flex flex-wrap items-center justify-between gap-3 rounded-[8px] border px-4 py-3 ${
+                draft.pageVisible ? "border-[var(--color-line)] bg-[var(--color-surface)]" : "border-dashed border-[var(--color-line-2)] bg-[var(--color-surface-2)]"
+              }`}
+            >
+              <Toggle
+                checked={draft.pageVisible}
+                onChange={(v) => setDraft((d) => ({ ...d, pageVisible: v }))}
+                label={`Halaman ${pageLabel} tampil di website`}
+                description={draft.pageVisible ? `Bisa dibuka di ${href} dan tertaut di footer.` : "Halaman disembunyikan: tidak ada di footer dan tidak bisa dibuka."}
+              />
+            </div>
+          )}
           <div className="mb-4 flex flex-wrap items-center gap-2">
             <label className="relative min-w-[200px] flex-1">
               <span className="sr-only">Cari tulisan</span>
@@ -236,6 +266,10 @@ export function PageEditor({
                 sFields.some((f) => (f.columns ? !sameList(draft.texts[f.key] ?? "", f.default) : (draft.texts[f.key] ?? "") !== f.default)) ||
                 sSlots.some((m) => JSON.stringify(draft.media[m.key] ?? []) !== JSON.stringify(m.default));
               const idx = movableIds.indexOf(section.id);
+              // The video link matters more than its poster, so it comes first there.
+              const textEditors = sFields.map((f) => (
+                <TextFieldEditor key={f.key} field={f} value={draft.texts[f.key] ?? ""} onChange={(v) => setText(f.key, v)} />
+              ));
               const counts = [
                 sFields.length ? `${sFields.length} tulisan` : "",
                 sSlots.length ? `${sSlots.length} foto` : "",
@@ -314,6 +348,8 @@ export function PageEditor({
                         </Link>
                       )}
 
+                      {section.id === "video" && textEditors}
+
                       {sSlots.map((slot) => (
                         <FieldShell
                           key={slot.key}
@@ -341,9 +377,7 @@ export function PageEditor({
                         </FieldShell>
                       ))}
 
-                      {sFields.map((f) => (
-                        <TextFieldEditor key={f.key} field={f} value={draft.texts[f.key] ?? ""} onChange={(v) => setText(f.key, v)} />
-                      ))}
+                      {section.id !== "video" && textEditors}
 
                       {collection === "services" && draft.services && (
                         <FieldShell label="Daftar layanan" hint="Urutan di sini = urutan di Beranda dan halaman Layanan. Klik nama untuk mengubah.">
@@ -353,6 +387,16 @@ export function PageEditor({
                       {collection === "team" && draft.team && (
                         <FieldShell label="Anggota tim" hint="Foto opsional — tanpa foto, inisial nama yang tampil.">
                           <TeamEditor value={draft.team} onChange={(v) => setDraft((d) => ({ ...d, team: v }))} />
+                        </FieldShell>
+                      )}
+                      {collection === "testimonials" && draft.testimonials && (
+                        <FieldShell label="Testimoni" hint="Tampil di Beranda dan halaman Klien. Pastikan klien sudah mengizinkan kutipannya dipublikasikan.">
+                          <TestimonialsEditor value={draft.testimonials} onChange={(v) => setDraft((d) => ({ ...d, testimonials: v }))} />
+                        </FieldShell>
+                      )}
+                      {collection === "jobs" && draft.jobs && (
+                        <FieldShell label="Lowongan" hint="Lamaran dikirim pelamar ke email kantor (Info Perusahaan).">
+                          <JobsEditor value={draft.jobs} onChange={(v) => setDraft((d) => ({ ...d, jobs: v }))} />
                         </FieldShell>
                       )}
                       {collection === "equipment" && draft.equipment && (

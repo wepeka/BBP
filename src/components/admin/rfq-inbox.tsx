@@ -61,9 +61,10 @@ export function RfqInbox({ entries, services, companyShort }: { entries: RfqEntr
   }
 
   function exportCsv() {
-    const header = ["Tanggal", "Nama", "Perusahaan", "Email", "WhatsApp", "Jenis pekerjaan", "Lokasi", "Luas (m2)", "Target mulai", "Pesan", "Status", "Catatan internal"];
+    const header = ["Tanggal", "Jenis", "Nama", "Perusahaan", "Email", "WhatsApp", "Jenis pekerjaan", "Lokasi", "Luas (m2)", "Target mulai", "Pesan", "Status", "Catatan internal"];
     const rows = entries.map((e) => [
       formatDate(e.createdAt, { day: "2-digit", month: "2-digit", year: "numeric" }),
+      e.type === "unduhan" ? "Unduh company profile" : "Permintaan penawaran",
       e.name,
       e.company,
       e.email,
@@ -126,7 +127,10 @@ export function RfqInbox({ entries, services, companyShort }: { entries: RfqEntr
           {visible.map((e) => {
             const open = openId === e.id;
             const st = statusOf(e.status);
-            const greeting = `Halo ${e.name}, terima kasih sudah menghubungi ${companyShort}. Kami sudah menerima permintaan penawaran Anda untuk proyek di ${e.location}.`;
+            const greeting =
+              e.type === "unduhan"
+                ? `Halo ${e.name}, terima kasih sudah mengunduh company profile ${companyShort}. Apakah ada proyek yang sedang Anda rencanakan?`
+                : `Halo ${e.name}, terima kasih sudah menghubungi ${companyShort}. Kami sudah menerima permintaan penawaran Anda untuk proyek di ${e.location}.`;
             return (
               <li key={e.id} className={`overflow-hidden rounded-[8px] border bg-[var(--color-surface)] ${e.status === "baru" ? "border-[var(--color-yellow)]" : "border-[var(--color-line)]"}`}>
                 <button type="button" onClick={() => setOpenId(open ? null : e.id)} aria-expanded={open} className="flex w-full items-center gap-3 px-4 py-3.5 text-left">
@@ -135,9 +139,11 @@ export function RfqInbox({ entries, services, companyShort }: { entries: RfqEntr
                       {e.company || e.name}
                       {e.company && <span className="font-normal text-[var(--color-ink-3)]">{e.name}</span>}
                       <Badge tone={st.tone}>{st.label}</Badge>
+                      {e.type === "unduhan" && <Badge tone="green">Unduh company profile</Badge>}
                     </p>
                     <p className="mt-0.5 truncate text-[12.5px] text-[var(--color-ink-3)]">
-                      {formatDate(e.createdAt, { day: "numeric", month: "short", year: "numeric", hour: "2-digit", minute: "2-digit" })} · {e.location} · {serviceName(e.serviceId)}
+                      {formatDate(e.createdAt, { day: "numeric", month: "short", year: "numeric", hour: "2-digit", minute: "2-digit" })}
+                      {e.type === "unduhan" ? ` · ${e.email}` : ` · ${e.location} · ${serviceName(e.serviceId)}`}
                     </p>
                   </div>
                   <ChevronDown size={18} className={`shrink-0 text-[var(--color-ink-3)] transition-transform ${open ? "" : "-rotate-90"}`} aria-hidden="true" />
@@ -181,9 +187,11 @@ export function RfqInbox({ entries, services, companyShort }: { entries: RfqEntr
                         </blockquote>
                       )}
                       <div className="flex flex-wrap gap-2">
-                        <a href={waLink(e.whatsapp, greeting)} target="_blank" rel="noopener noreferrer" className={buttonClass("primary", "sm", "!bg-[#25D366] hover:!bg-[#1fb958]")}>
-                          <MessageCircle size={14} aria-hidden="true" /> Balas WhatsApp · {e.whatsapp}
-                        </a>
+                        {e.whatsapp.replace(/[^0-9]/g, "").length >= 9 && (
+                          <a href={waLink(e.whatsapp, greeting)} target="_blank" rel="noopener noreferrer" className={buttonClass("primary", "sm", "!bg-[#25D366] hover:!bg-[#1fb958]")}>
+                            <MessageCircle size={14} aria-hidden="true" /> Balas WhatsApp · {e.whatsapp}
+                          </a>
+                        )}
                         <a
                           href={`mailto:${e.email}?subject=${encodeURIComponent(`Penawaran ${companyShort} — proyek di ${e.location}`)}&body=${encodeURIComponent(greeting)}`}
                           className={buttonClass("secondary", "sm")}

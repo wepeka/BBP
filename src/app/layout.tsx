@@ -76,10 +76,13 @@ export async function generateMetadata(): Promise<Metadata> {
     },
     twitter: { card: "summary_large_image" },
     formatDetection: { telephone: false },
+    ...(settings.googleVerification ? { verification: { google: settings.googleVerification } } : {}),
   };
 }
 
-export default function RootLayout({ children }: { children: React.ReactNode }) {
+export default async function RootLayout({ children }: { children: React.ReactNode }) {
+  const settings = await getSettings();
+  const ga = /^G-[A-Z0-9]{4,}$/.test(settings.analyticsId) ? settings.analyticsId : null;
   return (
     <html lang="id" className={`${poppins.variable} ${inter.variable} ${plexMono.variable}`} suppressHydrationWarning>
       <body className="flex min-h-screen flex-col bg-[var(--color-bg)] text-[var(--color-ink)]">
@@ -93,6 +96,14 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           Lompat ke konten utama
         </a>
         {children}
+        {ga && (
+          <>
+            <Script src={`https://www.googletagmanager.com/gtag/js?id=${ga}`} strategy="afterInteractive" />
+            <Script id="ga4" strategy="afterInteractive">
+              {`window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());if(!location.pathname.startsWith('/admin')){gtag('config','${ga}');}`}
+            </Script>
+          </>
+        )}
       </body>
     </html>
   );

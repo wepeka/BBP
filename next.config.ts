@@ -16,6 +16,8 @@ const nextConfig: NextConfig = {
     // Uploaded files never change (their names carry a random suffix), so
     // optimized variants can be kept for a month.
     minimumCacheTTL: 2678400,
+    // YouTube thumbnails for the video sections.
+    remotePatterns: [{ protocol: "https", hostname: "i.ytimg.com", pathname: "/vi/**" }],
   },
   experimental: {
     serverActions: {

@@ -1,4 +1,16 @@
-import { getAllProjects, getCategories, getEquipment, getLayout, getMedia, getServices, getTeam, getTexts } from "@/lib/repo";
+import {
+  getAllJobs,
+  getAllProjects,
+  getAllTestimonials,
+  getCategories,
+  getEquipment,
+  getLayout,
+  getMedia,
+  getServices,
+  getSettings,
+  getTeam,
+  getTexts,
+} from "@/lib/repo";
 import { TEXT_FIELDS, TEXT_DEFAULTS, type TextField } from "@/lib/texts";
 import { MEDIA_SLOTS, mediaFor } from "@/lib/media";
 import { PAGES, orderedSections } from "@/lib/sections";
@@ -10,7 +22,7 @@ export const metadata = { title: "Halaman Website" };
 export default async function AdminHalamanPage({ searchParams }: { searchParams: Promise<{ halaman?: string }> }) {
   const params = await searchParams;
   const page = PAGES.find((p) => p.id === params.halaman) ?? PAGES[0];
-  const [texts, media, layout, services, team, equipment, projects, categories] = await Promise.all([
+  const [texts, media, layout, services, team, equipment, projects, categories, testimonials, jobs, settings] = await Promise.all([
     getTexts(),
     getMedia(),
     getLayout(),
@@ -19,6 +31,9 @@ export default async function AdminHalamanPage({ searchParams }: { searchParams:
     getEquipment(),
     getAllProjects(),
     getCategories(),
+    getAllTestimonials(),
+    getAllJobs(),
+    getSettings(),
   ]);
 
   const fields: EditorField[] = (TEXT_FIELDS as readonly TextField[])
@@ -66,6 +81,9 @@ export default async function AdminHalamanPage({ searchParams }: { searchParams:
           })) } : {}),
     ...(page.id === "tentang" ? { team: team.map((m) => ({ id: m.id, name: m.name, role: m.role, photo: m.photo ?? null })) } : {}),
     ...(page.id === "kapasitas" ? { equipment } : {}),
+    ...(page.id === "beranda" ? { testimonials } : {}),
+    ...(page.id === "karier" ? { jobs } : {}),
+    ...(page.optional ? { pageVisible: !settings.hiddenPages.includes(page.id) } : {}),
   };
 
   return (

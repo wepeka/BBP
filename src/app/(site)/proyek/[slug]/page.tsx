@@ -10,6 +10,8 @@ import { waLink } from "@/lib/site";
 import { ProjectGallery } from "@/components/site/project-gallery";
 import { ProjectCard } from "@/components/site/project-card";
 import { LocationMapClient } from "@/components/site/location-map-loader";
+import { VideoEmbed } from "@/components/site/video-embed";
+import { parseVideoUrl } from "@/lib/video";
 
 export async function generateStaticParams() {
   const projects = await getProjects();
@@ -55,6 +57,7 @@ export default async function ProjectDetailPage({ params }: { params: Promise<{ 
   const prev = idx > 0 ? allProjects[idx - 1] : null;
   const next = idx < allProjects.length - 1 ? allProjects[idx + 1] : null;
 
+  const video = parseVideoUrl(project.videoUrl);
   const hasCoords = Boolean(project.lat || project.lng);
   const distance = hasCoords ? Math.round(distanceKm(settings.officeLat, settings.officeLng, project.lat, project.lng)) : null;
   const paragraphs = project.descriptionId.split(/\n\s*\n/).filter((p) => p.trim());
@@ -87,6 +90,8 @@ export default async function ProjectDetailPage({ params }: { params: Promise<{ 
     project.duration ? { label: "Durasi", value: project.duration } : null,
   ].filter(Boolean) as Cell[];
   if (extra.length) rows.push(extra);
+  const facts = (project.facts ?? []).filter((f) => f.label.trim() && f.value.trim());
+  for (let i = 0; i < facts.length; i += 2) rows.push(facts.slice(i, i + 2).map((f) => ({ label: f.label, value: f.value })));
   if (project.scope) rows.push([{ label: "Lingkup", value: project.scope }]);
 
   return (
@@ -123,8 +128,14 @@ export default async function ProjectDetailPage({ params }: { params: Promise<{ 
         </h1>
 
         <div className="mt-10 grid gap-8 lg:grid-cols-[1.35fr_1fr] lg:items-start">
-          <div data-no-reveal>
+          <div data-no-reveal className="space-y-6">
             <ProjectGallery images={project.images} alt={project.titleId} />
+            {video && (
+              <div>
+                <p className="mb-3 font-data text-[11px] uppercase tracking-[0.16em] text-[var(--color-ink-3)]">{t["project.video"]}</p>
+                <VideoEmbed video={video} title={project.titleId} />
+              </div>
+            )}
           </div>
 
           <aside data-no-reveal className="lg:sticky lg:top-24">

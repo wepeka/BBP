@@ -6,6 +6,7 @@ import type { Settings } from "@/lib/types";
 import { fill, type Texts } from "@/lib/texts";
 import { mapsLink, telHref } from "@/lib/site";
 import type { NavItem } from "@/components/site/site-header";
+import { CompanyProfileButton } from "@/components/site/company-profile-button";
 
 export function SiteFooter({
   settings,
@@ -30,6 +31,16 @@ export function SiteFooter({
           <p className="mt-5 max-w-sm whitespace-pre-line text-[14.5px] leading-relaxed text-[var(--color-ink-2)]">
             {fill(t["common.footer.about"], { taglinePanjang: settings.taglineLong, tanggalBerdiri: settings.established })}
           </p>
+          {settings.companyProfilePdf && (
+            <CompanyProfileButton
+              variant="link"
+              className="mt-5"
+              label={t["common.profile.button"]}
+              title={t["common.profile.title"]}
+              body={t["common.profile.body"]}
+              submitLabel={t["common.profile.submit"]}
+            />
+          )}
           <SocialIcons social={settings.social} className="mt-6" />
         </div>
 

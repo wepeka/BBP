@@ -2,7 +2,8 @@
 
 import { revalidatePath } from "next/cache";
 import { requireEditor } from "@/lib/auth";
-import { replaceCategories, updateMedia, updateSettings } from "@/lib/repo";
+import { getSettings, replaceCategories, updateMedia, updateSettings } from "@/lib/repo";
+import { notifyRecipients, sendEmail } from "@/lib/notify";
 import type { MediaItem, Settings } from "@/lib/types";
 
 export type SimpleResult = { ok: true } | { ok: false; error: string };
@@ -62,6 +63,10 @@ export async function saveSettingsAction(p: SettingsPayload): Promise<SimpleResu
         category: t(s.smk3.category),
         level: t(s.smk3.level),
       },
+      notifyEmail: t(s.notifyEmail),
+      companyProfilePdf: s.companyProfilePdf || null,
+      analyticsId: t(s.analyticsId).toUpperCase(),
+      googleVerification: t(s.googleVerification).match(/content="([^"]+)"/)?.[1] ?? t(s.googleVerification),
       social: {
         instagram: t(s.social.instagram),
         facebook: t(s.social.facebook),
@@ -75,6 +80,24 @@ export async function saveSettingsAction(p: SettingsPayload): Promise<SimpleResu
 
     revalidatePath("/", "layout");
     return { ok: true };
+  } catch (e) {
+    return { ok: false, error: (e as Error).message };
+  }
+}
+
+/** Sends a sample notification to the saved recipients. */
+export async function sendTestEmailAction(): Promise<SimpleResult> {
+  try {
+    await requireEditor();
+    const settings = await getSettings();
+    const to = notifyRecipients(settings);
+    const res = await sendEmail({
+      to,
+      subject: `Uji notifikasi website ${settings.shortName}`,
+      html: `<p style="font-family:Arial,sans-serif">Notifikasi email website ${settings.companyName} sudah aktif. Permintaan penawaran baru akan dikirim ke alamat ini.</p>`,
+      text: `Notifikasi email website ${settings.companyName} sudah aktif.`,
+    });
+    return res.ok ? { ok: true } : { ok: false, error: res.error ?? "Gagal mengirim." };
   } catch (e) {
     return { ok: false, error: (e as Error).message };
   }

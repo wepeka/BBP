@@ -3,7 +3,8 @@
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useMemo, useState, useTransition } from "react";
-import { ArrowLeft, Copy, ExternalLink, Trash2, ChevronDown } from "lucide-react";
+import { ArrowLeft, Copy, ExternalLink, Trash2, ChevronDown, Plus } from "lucide-react";
+import { parseVideoUrl } from "@/lib/video";
 import type { Category, Client, Project } from "@/lib/types";
 import {
   deleteProjectAction,
@@ -13,7 +14,7 @@ import {
 } from "@/app/admin/(protected)/proyek/actions";
 import { slugify } from "@/lib/categories";
 import { useAdmin } from "./admin-context";
-import { AutoTextarea, SaveBar, Toggle, useEditorGuards } from "./controls";
+import { AutoTextarea, RowControls, SaveBar, Toggle, moveItem, useEditorGuards } from "./controls";
 import { PhotoListField } from "./image-field";
 import { MapPicker } from "./map-picker";
 import { Badge, Card, FieldShell, SectionTitle, buttonClass, inputClass } from "./ui";
@@ -39,6 +40,8 @@ function toForm(p?: Project | null): ProjectFormData {
     hidden: p?.hidden ?? false,
     area: p?.area ?? "",
     duration: p?.duration ?? "",
+    facts: p?.facts ?? [],
+    videoUrl: p?.videoUrl ?? "",
   };
 }
 
@@ -211,6 +214,58 @@ export function ProjectEditor({
           <Card>
             <SectionTitle description="Foto pertama dipakai sebagai sampul di kartu proyek. Foto dari HP langsung dikompres otomatis.">Foto proyek</SectionTitle>
             <PhotoListField value={form.images} onChange={(v) => set("images", v)} folder={folder} />
+          </Card>
+
+          <Card>
+            <SectionTitle description="Angka konkret membuat proyek lebih meyakinkan. Tampil di lembar data proyek.">Fakta tambahan & video</SectionTitle>
+            <div className="space-y-2">
+              {form.facts.map((f, i) => (
+                <div key={i} className="grid items-center gap-2 sm:grid-cols-[0.8fr_1fr_auto]">
+                  <input
+                    value={f.label}
+                    onChange={(e) => set("facts", form.facts.map((x, k) => (k === i ? { ...x, label: e.target.value } : x)))}
+                    placeholder="mis. Tonase baja"
+                    aria-label={`Nama fakta ${i + 1}`}
+                    className={inputClass}
+                  />
+                  <input
+                    value={f.value}
+                    onChange={(e) => set("facts", form.facts.map((x, k) => (k === i ? { ...x, value: e.target.value } : x)))}
+                    placeholder="mis. 320 ton"
+                    aria-label={`Nilai fakta ${i + 1}`}
+                    className={inputClass}
+                  />
+                  <RowControls
+                    index={i}
+                    count={form.facts.length}
+                    onMove={(to) => set("facts", moveItem(form.facts, i, to))}
+                    onRemove={() => set("facts", form.facts.filter((_, k) => k !== i))}
+                    removeLabel="Hapus fakta"
+                  />
+                </div>
+              ))}
+              <div className="flex flex-wrap gap-2">
+                <button type="button" className={buttonClass("secondary", "sm")} onClick={() => set("facts", [...form.facts, { label: "", value: "" }])}>
+                  <Plus size={14} aria-hidden="true" /> Tambah fakta
+                </button>
+                {["Tonase baja", "Jam kerja tanpa kecelakaan", "Nilai kontrak", "Jumlah tenaga kerja"]
+                  .filter((l) => !form.facts.some((f) => f.label === l))
+                  .map((l) => (
+                    <button key={l} type="button" onClick={() => set("facts", [...form.facts, { label: l, value: "" }])} className="rounded-[4px] border border-dashed border-[var(--color-line-2)] px-2 py-1 text-[12px] text-[var(--color-ink-2)] hover:border-[var(--color-teal)] hover:text-[var(--color-teal-text)]">
+                      + {l}
+                    </button>
+                  ))}
+              </div>
+            </div>
+            <FieldShell
+              label="Video proyek (YouTube / Vimeo)"
+              htmlFor="videoUrl"
+              className="mt-5"
+              error={form.videoUrl.trim() && !parseVideoUrl(form.videoUrl) ? "Link belum dikenali. Pakai link YouTube atau Vimeo." : undefined}
+              hint="Opsional, mis. timelapse erection atau video drone. Tampil di bawah galeri foto."
+            >
+              <input id="videoUrl" value={form.videoUrl} onChange={(e) => set("videoUrl", e.target.value)} placeholder="https://youtu.be/…" className={inputClass} />
+            </FieldShell>
           </Card>
 
           <Card>

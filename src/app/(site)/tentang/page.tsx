@@ -5,6 +5,7 @@ import { fill, parseList } from "@/lib/texts";
 import { firstMedia } from "@/lib/media";
 import { visibleSections } from "@/lib/sections";
 import { SectionHeading } from "@/components/site/section-heading";
+import { CompanyProfileButton } from "@/components/site/company-profile-button";
 
 export async function generateMetadata(): Promise<Metadata> {
   const t = await getTexts();
@@ -41,6 +42,15 @@ export default async function TentangPage() {
                   </p>
                 ))}
             </div>
+            {settings.companyProfilePdf && (
+              <CompanyProfileButton
+                className="mt-8"
+                label={t["common.profile.button"]}
+                title={t["common.profile.title"]}
+                body={t["common.profile.body"]}
+                submitLabel={t["common.profile.submit"]}
+              />
+            )}
           </div>
           {main && (
             <div className="hero-in reg-marks lg:mt-10" style={{ "--d": "120ms" } as React.CSSProperties}>

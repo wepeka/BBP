@@ -2,11 +2,12 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import Image from "next/image";
 import { ArrowRight, ExternalLink } from "lucide-react";
-import { getClients, getLayout, getProjects, getTexts } from "@/lib/repo";
+import { getClients, getLayout, getProjects, getTestimonials, getTexts } from "@/lib/repo";
 import { fill } from "@/lib/texts";
 import { visibleSections } from "@/lib/sections";
 import { sameClient } from "@/lib/site";
-import { PageHeader } from "@/components/site/section-heading";
+import { PageHeader, SectionHeading } from "@/components/site/section-heading";
+import { Testimonials } from "@/components/site/testimonials";
 
 export async function generateMetadata(): Promise<Metadata> {
   const t = await getTexts();
@@ -14,7 +15,7 @@ export async function generateMetadata(): Promise<Metadata> {
 }
 
 export default async function KlienPage() {
-  const [clients, projects, t, layout] = await Promise.all([getClients(), getProjects(), getTexts(), getLayout()]);
+  const [clients, projects, t, layout, testimonials] = await Promise.all([getClients(), getProjects(), getTexts(), getLayout(), getTestimonials()]);
   const flagship = clients.filter((c) => c.flagship);
   const others = clients.filter((c) => !c.flagship);
   const year = new Date().getFullYear();
@@ -77,6 +78,16 @@ export default async function KlienPage() {
               </article>
             );
           })}
+        </section>
+      ) : null,
+
+    testimonials: () =>
+      testimonials.length ? (
+        <section id="sec-testimonials" key="testimonials" className="container-x pb-16 sm:pb-20">
+          <SectionHeading title={t["clients.testimonials.title"]} />
+          <div className="mt-10">
+            <Testimonials items={testimonials} />
+          </div>
         </section>
       ) : null,
 

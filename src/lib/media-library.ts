@@ -5,7 +5,9 @@ import {
   getAllProjects,
   getEquipment,
   getMedia,
+  getAllTestimonials,
   getServices,
+  getSettings,
   getTeam,
 } from "./repo";
 import { listUploads, uploadPathname } from "./store";
@@ -24,7 +26,7 @@ export interface LibraryItem {
 
 /** Where each picture/PDF is used, keyed by URL, with human-readable labels. */
 export async function mediaUsage(): Promise<Map<string, string[]>> {
-  const [projects, clients, services, team, equipment, certificates, media] = await Promise.all([
+  const [projects, clients, services, team, equipment, certificates, media, testimonials, settings] = await Promise.all([
     getAllProjects(),
     getAllClients(),
     getServices(),
@@ -32,6 +34,8 @@ export async function mediaUsage(): Promise<Map<string, string[]>> {
     getEquipment(),
     getAllCertificates(),
     getMedia(),
+    getAllTestimonials(),
+    getSettings(),
   ]);
   const usage = new Map<string, string[]>();
   const add = (url: string | null | undefined, label: string) => {
@@ -44,6 +48,8 @@ export async function mediaUsage(): Promise<Map<string, string[]>> {
   for (const m of team) add(m.photo, `Tim: ${m.name}`);
   for (const e of equipment) add(e.image, `Alat: ${e.name}`);
   for (const c of certificates) add(c.fileUrl, `Sertifikat: ${c.name}`);
+  for (const t of testimonials) add(t.photo, `Testimoni: ${t.name}`);
+  add(settings.companyProfilePdf, "Company profile PDF");
   for (const slot of MEDIA_SLOTS) mediaFor(media, slot.key).forEach((m) => add(m.src, slot.label));
   return usage;
 }

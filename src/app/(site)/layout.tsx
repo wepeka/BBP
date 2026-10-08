@@ -1,5 +1,6 @@
 import { getMedia, getSettings, getTexts } from "@/lib/repo";
 import { firstMedia } from "@/lib/media";
+import { isPageHidden } from "@/lib/sections";
 import { telHref } from "@/lib/site";
 import { SiteHeader, type NavItem } from "@/components/site/site-header";
 import { SiteFooter } from "@/components/site/site-footer";
@@ -21,6 +22,13 @@ export default async function SiteLayout({ children }: { children: React.ReactNo
     { href: "/klien", label: t["common.nav.klien"] },
   ];
 
+  const extraLinks: NavItem[] = [
+    { href: "/k3", label: t["common.nav.k3"], id: "k3" },
+    { href: "/karier", label: t["common.nav.karier"], id: "karier" },
+  ]
+    .filter((l) => !isPageHidden(l.id, settings.hiddenPages))
+    .map(({ href, label }) => ({ href, label }));
+
   return (
     <div className="flex min-h-screen flex-col">
       <BackgroundMotion />
@@ -37,7 +45,7 @@ export default async function SiteLayout({ children }: { children: React.ReactNo
       <main id="konten-utama" className="flex-1">
         {children}
       </main>
-      <SiteFooter settings={settings} texts={t} nav={nav} logoSrc={logo} />
+      <SiteFooter settings={settings} texts={t} nav={[...nav, ...extraLinks]} logoSrc={logo} />
       <WhatsAppFab whatsapp={settings.whatsapp} message={settings.whatsappMessage} label={t["common.wa.label"]} />
       <RevealObserver />
       <OrganizationJsonLd settings={settings} logo={logo} />

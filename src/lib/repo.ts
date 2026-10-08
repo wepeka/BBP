@@ -16,6 +16,8 @@ import type {
   Settings,
   SocialLinks,
   TeamMember,
+  Testimonial,
+  Job,
 } from "./types";
 import { TEXT_DEFAULTS, getTextField, parseList, sameList, type TextKey, type Texts } from "./texts";
 import { DEFAULT_CATEGORIES, slugify } from "./categories";
@@ -34,6 +36,11 @@ function withSettingsDefaults(stored: Partial<Settings>): Settings {
     ...(stored as Settings),
     social: { ...DEFAULT_SOCIAL, ...(stored.social ?? {}) },
     whatsappMessage: stored.whatsappMessage ?? DEFAULT_WA_MESSAGE,
+    notifyEmail: stored.notifyEmail ?? "",
+    companyProfilePdf: stored.companyProfilePdf ?? null,
+    analyticsId: stored.analyticsId ?? "",
+    googleVerification: stored.googleVerification ?? "",
+    hiddenPages: Array.isArray(stored.hiddenPages) ? stored.hiddenPages : [],
   };
 }
 
@@ -255,6 +262,41 @@ export async function replaceTeam(members: { id?: string; name: string; role: st
   await writeCollection("team", next);
 }
 
+/* ---------- Testimonials ---------- */
+
+export async function getAllTestimonials(): Promise<Testimonial[]> {
+  return readCollection<Testimonial[]>("testimonials", []);
+}
+
+export async function getTestimonials(): Promise<Testimonial[]> {
+  return (await getAllTestimonials()).filter((t) => !t.hidden && t.quote.trim());
+}
+
+export async function replaceTestimonials(list: Testimonial[]): Promise<void> {
+  await writeCollection(
+    "testimonials",
+    list.map((t) => ({ ...t, id: t.id || newId("tm") }))
+  );
+}
+
+/* ---------- Jobs (Karier) ---------- */
+
+export async function getAllJobs(): Promise<Job[]> {
+  return readCollection<Job[]>("jobs", []);
+}
+
+export async function getJobs(): Promise<Job[]> {
+  const today = new Date().toISOString().slice(0, 10);
+  return (await getAllJobs()).filter((j) => !j.hidden && j.title.trim() && (!j.deadline || j.deadline >= today));
+}
+
+export async function replaceJobs(list: Job[]): Promise<void> {
+  await writeCollection(
+    "jobs",
+    list.map((j) => ({ ...j, id: j.id || newId("job") }))
+  );
+}
+
 /* ---------- Certificates ---------- */
 
 export async function getAllCertificates(): Promise<Certificate[]> {
@@ -313,7 +355,7 @@ export async function getRfqEntries(): Promise<RfqEntry[]> {
 }
 
 export async function createRfqEntry(
-  input: Omit<RfqEntry, "id" | "createdAt" | "status" | "internalNote">
+  input: Omit<RfqEntry, "id" | "createdAt" | "status" | "internalNote"> & { type?: RfqEntry["type"] }
 ): Promise<RfqEntry> {
   const items = await readCollectionFresh<RfqEntry[]>("rfq", []);
   const entry: RfqEntry = {
@@ -457,6 +499,8 @@ export const BACKUP_COLLECTIONS = [
   "equipment",
   "team",
   "certificates",
+  "testimonials",
+  "jobs",
   "rfq",
 ] as const;
 

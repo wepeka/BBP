@@ -4,17 +4,20 @@ import { useRouter } from "next/navigation";
 import { useMemo, useState, useTransition } from "react";
 import { Plus } from "lucide-react";
 import type { Category, MediaItem, Settings } from "@/lib/types";
-import { saveSettingsAction } from "@/app/admin/(protected)/pengaturan/actions";
+import { saveSettingsAction, sendTestEmailAction } from "@/app/admin/(protected)/pengaturan/actions";
 import { useAdmin } from "./admin-context";
 import { AutoTextarea, RowControls, SaveBar, Toggle, moveItem, useEditorGuards } from "./controls";
-import { ImageField } from "./image-field";
+import { ImageField, PdfField } from "./image-field";
 import { MapPicker } from "./map-picker";
-import { Card, FieldShell, SectionTitle, buttonClass, inputClass } from "./ui";
+import { Badge, Card, FieldShell, SectionTitle, buttonClass, inputClass } from "./ui";
 
 const SECTIONS = [
   ["identitas", "Identitas"],
   ["kontak", "Kontak & lokasi"],
   ["sosial", "Media sosial"],
+  ["notifikasi", "Notifikasi email"],
+  ["unduhan", "Company profile PDF"],
+  ["google", "Google"],
   ["direktur", "Direktur"],
   ["legal", "Nomor legal"],
   ["mutu", "ISO & SMK3"],
@@ -34,18 +37,21 @@ export function SettingsForm({
   categories,
   categoryUsage,
   computed,
+  emailConfigured,
 }: {
   settings: Settings;
   directorPhoto: MediaItem[];
   categories: Category[];
   categoryUsage: Record<string, number>;
   computed: { years: number; cities: number };
+  emailConfigured: boolean;
 }) {
   const router = useRouter();
   const { toast, confirm, canEdit } = useAdmin();
   const [saved, setSaved] = useState<Draft>({ settings, directorPhoto, categories });
   const [draft, setDraft] = useState<Draft>(saved);
   const [saving, startSaving] = useTransition();
+  const [testing, startTesting] = useTransition();
   const dirty = useMemo(() => JSON.stringify(draft) !== JSON.stringify(saved), [draft, saved]);
   const s = draft.settings;
 
@@ -153,6 +159,71 @@ export function SettingsForm({
               {text("LinkedIn", s.social.linkedin, (v) => nested("social", { linkedin: v }), { placeholder: "https://linkedin.com/company/…" })}
               {text("YouTube", s.social.youtube, (v) => nested("social", { youtube: v }), { placeholder: "https://youtube.com/@…" })}
               {text("TikTok", s.social.tiktok, (v) => nested("social", { tiktok: v }), { placeholder: "https://tiktok.com/@…" })}
+            </div>
+          </section>
+        </Card>
+
+        <Card>
+          <section id="notifikasi" className="scroll-mt-6">
+            <SectionTitle description="Setiap ada permintaan penawaran atau unduhan company profile, email ringkasan dikirim ke alamat ini.">
+              Notifikasi email
+            </SectionTitle>
+            <div className="mb-4 flex flex-wrap items-center gap-2 text-[13px]">
+              Status pengiriman:
+              {emailConfigured ? <Badge tone="green">Aktif</Badge> : <Badge tone="yellow">Belum disambungkan</Badge>}
+            </div>
+            {!emailConfigured && (
+              <p className="mb-4 rounded-[6px] bg-[var(--color-bg)] p-3.5 text-[12.5px] leading-relaxed text-[var(--color-ink-2)]">
+                Pengiriman email memakai layanan Resend (gratis hingga 3.000 email/bulan). Daftar di resend.com, buat API key, lalu pasang sebagai
+                <code className="mx-1 rounded bg-[var(--color-surface-2)] px-1 font-data">RESEND_API_KEY</code>
+                di Vercel → Project → Settings → Environment Variables, lalu deploy ulang. Selama belum disambungkan, permintaan tetap aman tersimpan di Inbox Penawaran.
+              </p>
+            )}
+            <div className="grid gap-4 sm:grid-cols-[1fr_auto] sm:items-end">
+              {text("Kirim notifikasi ke", s.notifyEmail, (v) => patch({ notifyEmail: v }), {
+                placeholder: s.email,
+                hint: "Pisahkan dengan koma untuk beberapa alamat. Kosongkan untuk memakai email kantor.",
+              })}
+              <button
+                type="button"
+                disabled={!emailConfigured || testing || dirty}
+                title={dirty ? "Simpan dulu perubahan" : undefined}
+                onClick={() =>
+                  startTesting(async () => {
+                    const res = await sendTestEmailAction();
+                    toast(res.ok ? "Email uji terkirim. Cek kotak masuk (dan folder spam)." : res.error, res.ok ? "success" : "error");
+                  })
+                }
+                className={buttonClass("secondary", "md", "sm:mb-[22px]")}
+              >
+                Kirim email uji
+              </button>
+            </div>
+          </section>
+        </Card>
+
+        <Card>
+          <section id="unduhan" className="scroll-mt-6">
+            <SectionTitle description="Jika diisi, tombol “Unduh Company Profile” muncul di Beranda, Tentang, dan footer. Pengunjung mengisi nama & email dulu — datanya masuk Inbox Penawaran.">
+              Company profile PDF
+            </SectionTitle>
+            <PdfField value={s.companyProfilePdf} onChange={(url) => patch({ companyProfilePdf: url })} folder="company-profile" />
+          </section>
+        </Card>
+
+        <Card>
+          <section id="google" className="scroll-mt-6">
+            <SectionTitle description="Opsional. Untuk melihat jumlah pengunjung dan performa di pencarian Google.">Google</SectionTitle>
+            <div className="grid gap-4 sm:grid-cols-2">
+              {text("Google Analytics 4 — Measurement ID", s.analyticsId, (v) => patch({ analyticsId: v }), {
+                mono: true,
+                placeholder: "G-XXXXXXXXXX",
+                hint: "analytics.google.com → Admin → Data streams → Web.",
+              })}
+              {text("Google Search Console — kode verifikasi", s.googleVerification, (v) => patch({ googleVerification: v }), {
+                mono: true,
+                hint: "Pilih metode “Tag HTML”, lalu tempel kodenya (boleh seluruh tag <meta>).",
+              })}
             </div>
           </section>
         </Card>

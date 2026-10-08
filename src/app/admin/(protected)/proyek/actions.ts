@@ -35,6 +35,8 @@ export interface ProjectFormData {
   hidden: boolean;
   area: string;
   duration: string;
+  facts: { label: string; value: string }[];
+  videoUrl: string;
 }
 
 const t = (v: unknown) => String(v ?? "").replace(/\r\n/g, "\n").trim();
@@ -72,6 +74,8 @@ function toInput(d: ProjectFormData): ProjectInput {
     hidden: Boolean(d.hidden),
     area: t(d.area) || null,
     duration: t(d.duration) || null,
+    facts: (d.facts ?? []).map((f) => ({ label: t(f.label), value: t(f.value) })).filter((f) => f.label && f.value),
+    videoUrl: t(d.videoUrl) || null,
     slug: t(d.slug),
   };
 }

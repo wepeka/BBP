@@ -21,6 +21,8 @@ export interface PageDef {
   id: string;
   label: string;
   href: string;
+  /** Optional pages can be switched off entirely from the admin. */
+  optional?: boolean;
   sections: SectionDef[];
 }
 
@@ -37,6 +39,8 @@ export const PAGES: PageDef[] = [
       { id: "why", label: "Kenapa BBP", description: "Empat alasan memilih BBP (panel hijau gelap)." },
       { id: "map", label: "Peta proyek", description: "Peta jejak proyek se-Indonesia." },
       { id: "featured", label: "Proyek unggulan", description: "Proyek bertanda bintang.", manage: { href: "/admin/proyek", label: "Pilih proyek unggulan" } },
+      { id: "video", label: "Video", description: "Video YouTube/Vimeo. Tidak tampil sebelum link diisi." },
+      { id: "testimonials", label: "Testimoni klien", description: "Kutipan dari klien. Tidak tampil sebelum ada testimoni." },
       { id: "process", label: "Alur kerja", description: "Langkah kerja dari survei sampai serah terima." },
       { id: "director", label: "Direktur", description: "Foto dan profil singkat direktur.", manage: { href: "/admin/pengaturan#direktur", label: "Ubah data direktur" } },
       { id: "cta", label: "Ajakan penutup", description: "Panel gelap berisi tombol penawaran & WhatsApp." },
@@ -104,6 +108,7 @@ export const PAGES: PageDef[] = [
     sections: [
       { id: "intro", label: "Bagian atas", fixed: true },
       { id: "flagship", label: "Klien utama", manage: { href: "/admin/klien", label: "Kelola klien" } },
+      { id: "testimonials", label: "Testimoni klien", description: "Memakai testimoni yang sama dengan di Beranda.", manage: { href: "/admin/halaman?halaman=beranda#editor-testimonials", label: "Ubah testimoni" } },
       { id: "others", label: "Klien lainnya", manage: { href: "/admin/klien", label: "Kelola klien" } },
     ],
   },
@@ -118,6 +123,31 @@ export const PAGES: PageDef[] = [
     ],
   },
   {
+    id: "k3",
+    label: "K3 & Mutu",
+    href: "/k3",
+    optional: true,
+    sections: [
+      { id: "intro", label: "Bagian atas", fixed: true },
+      { id: "stats", label: "Angka K3 & mutu", description: "Skor SMK3 dan sertifikasi diambil dari Info Perusahaan.", manage: { href: "/admin/pengaturan#mutu", label: "Ubah skor SMK3 & ISO" } },
+      { id: "program", label: "Penerapan SMK3" },
+      { id: "quality", label: "Sistem mutu ISO" },
+      { id: "gallery", label: "Foto K3 di lapangan", description: "Tidak tampil sebelum ada foto." },
+      { id: "cta", label: "Ajakan di bawah" },
+    ],
+  },
+  {
+    id: "karier",
+    label: "Karier",
+    href: "/karier",
+    optional: true,
+    sections: [
+      { id: "intro", label: "Bagian atas", fixed: true },
+      { id: "openings", label: "Lowongan", description: "Lowongan yang lewat batas tanggal otomatis disembunyikan.", fixed: true },
+      { id: "how", label: "Cara melamar" },
+    ],
+  },
+  {
     id: "umum",
     label: "Header & Footer",
     href: "/",
@@ -125,6 +155,7 @@ export const PAGES: PageDef[] = [
       { id: "header", label: "Header & menu", fixed: true },
       { id: "footer", label: "Footer", fixed: true },
       { id: "whatsapp", label: "Tombol WhatsApp melayang", fixed: true },
+      { id: "download", label: "Unduh company profile", fixed: true, manage: { href: "/admin/pengaturan#unduhan", label: "Unggah PDF company profile" } },
       { id: "notfound", label: "Halaman tidak ditemukan (404)", fixed: true },
     ],
   },
@@ -161,4 +192,9 @@ export function orderedSections(pageId: string, layout: LayoutMap): SectionDef[]
 
 export function isHidden(pageId: string, sectionId: string, layout: LayoutMap): boolean {
   return Boolean(layout[pageId]?.hidden?.includes(sectionId));
+}
+
+/** True when an optional page has been switched off in the admin. */
+export function isPageHidden(pageId: string, hiddenPages: string[]): boolean {
+  return Boolean(getPageDef(pageId)?.optional && hiddenPages.includes(pageId));
 }
